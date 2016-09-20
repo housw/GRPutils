@@ -114,7 +114,7 @@ def write2grp(genomeSizeDict, fwd=None, rev=None, prefix=None, toInteger=True):
                     for pos, fwd_value, rev_value in zip(pos_array, fwd_value_array, rev_value_array):
                         oh.write("%d %d %d\n"%(pos, int(fwd_value), int(rev_value)))
                 else:
-                    for pos, fwd_value, rev_value in zip(pos_array, value_array, rev_value_array):
+                    for pos, fwd_value, rev_value in zip(pos_array, fwd_value_array, rev_value_array):
                         oh.write("%d %.2f %.2f\n"%(pos, fwd_value, rev_value))
 
 
