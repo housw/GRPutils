@@ -151,7 +151,8 @@ def read_grp(path2grp, ncol=2):
         2 0.00 0.00 -0.00 -0.00
         3 0.00 0.00 -0.00 -0.00
     """
-    headers, res = []
+    headers = []
+    res = []
     for i in range(ncol):
         res.append([])
 
@@ -170,68 +171,114 @@ def read_grp(path2grp, ncol=2):
     return headers, res
 
 
-def average(args):
+def write_grp(filename, headers, arrays, ncol, toInt):
+
+    # initialize base array as long as genome length
+    pos_array = np.arange(len(arrays[0]))
+    pos_array += 1
+
+    # write out grp
+    with open(filename, "w") as oh:
+        for line in headers:
+            oh.write(line+"\n")
+
+        if ncol == 2:
+            if toInt:
+                for pos, fwd, rev in zip(pos_array, arrays[0], arrays[1]):
+                    oh.write(str(pos)+" %d %d\n"%(int(fwd), int(rev)))
+            else:
+                for pos, fwd, rev in zip(pos_array, arrays[0], arrays[1]):
+                    oh.write(str(pos)+" %.2f %.2f\n"%(fwd, rev))
+        else:
+            if toInt:
+                for pos, fwd_cov, fwd_tss, rev_cov, rev_tss in zip(pos_array, arrays[0], arrays[1],
+                                                                   arrays[2], arrays[3]):
+                    oh.write(str(pos) + " %d %d %d %d\n" % (int(fwd_cov), int(fwd_tss), int(rev_cov), int(rev_tss)))
+            else:
+                for pos, fwd_cov, fwd_tss, rev_cov, rev_tss in zip(pos_array, arrays[0], arrays[1],
+                                                                   arrays[2], arrays[3]):
+                    oh.write(str(pos) + " %.2f %.2f %.2f %.2f\n" % (fwd_cov, fwd_tss, rev_cov, rev_tss))
+
+
+
+def merge(args):
     grpFile_list = args.input_grps
     prefix = args.prefix
     toInt = args.toInt
     ncol = args.ncol
+    mode = args.mode
 
     if prefix:
         outfile = prefix+".grp"
     else:
         basename = os.path.basename(grpFile_list[0])
         filestem = os.path.splitext(basename)[0]
-        outfile = filestem+"_averaged.grp"
+        outfile = filestem+"_" + mode + ".grp"
 
 
     # number of grp files
     n = len(grpFile_list)
 
-    # read in first one, sum the others, then divide by n
+    # read in first one, sum the others, then divide by n (if mode == average)
     headers, grp_arrays = read_grp(grpFile_list[0], ncol)
     for grp_file in grpFile_list[1:]:
         tmp_headers, tmp_grp_arrays = read_grp(grp_file, ncol)
         assert len(tmp_grp_arrays) == len(grp_arrays), "The input grp files have different number of columns!"
         for i, tmp_arr in enumerate(tmp_grp_arrays):
             grp_arrays[i] += tmp_arr
-    for i, arr in enumerate(grp_arrays):
-        grp_arrays[i] = arr/n
 
-    # initialize base array as long as genome length
-    pos_array = np.arange(len(grp_arrays[0]))
-    pos_array += 1
+    if mode == "average":
+        for i, arr in enumerate(grp_arrays):
+            grp_arrays[i] = arr/n
 
     # make rev to minus, write out averaged grp file
     if ncol == 2:
         grp_arrays[1] *= -1
-
-        with open(outfile, "w") as oh:
-
-            # to customize the line color, we must use space delimited format
-            oh.write("# BASE fwd_grp rev_grp\n")
-            oh.write("# colour 0:204:0 0:0:255\n")
-            if toInt:
-                for pos, fwd, rev in zip(pos_array, grp_arrays[0], grp_arrays[1]):
-                    oh.write(str(pos)+" %d %d\n"%(int(fwd), int(rev)))
-            else:
-                for pos, fwd, rev in zip(pos_array, grp_arrays[0], grp_arrays[1]):
-                    oh.write(str(pos)+" %.2f %.2f\n"%(fwd, rev))
+        write_grp(outfile, headers, grp_arrays, ncol, toInt)
 
     else:
         grp_arrays[2] *= -1
         grp_arrays[3] *= -1
+        write_grp(outfile, headers, grp_arrays, ncol, toInt)
 
-        with open(outfile, "w") as oh:
-            oh.write("# BASE fwd_cov fwd_tss rev_cov rev_tss\n")
-            oh.write("# colour 0:204:0 255:0:0 0:0:255 255:0:0\n")
-            if toInt:
-                for pos, fwd_cov, fwd_tss, rev_cov, rev_tss in zip(pos_array, grp_arrays[0], grp_arrays[1],
-                                                                   grp_arrays[2], grp_arrays[3]):
-                    oh.write(str(pos)+" %d %d %d $d\n"%(int(fwd_cov), int(fwd_tss), int(rev_cov), int(rev_tss)))
-            else:
-                for pos, fwd_cov, fwd_tss, rev_cov, rev_tss in zip(pos_array, grp_arrays[0], grp_arrays[1],
-                                                                   grp_arrays[2], grp_arrays[3]):
-                    oh.write(str(pos)+" %.2f %.2f %.2f %.2f\n"%(fwd_cov, fwd_tss, rev_cov, rev_tss))
+
+def subtract(args):
+    """
+    :param args:
+    :return:
+    """
+    prefix = args.prefix
+    first_grp = args.first_grp
+    second_grp = args.second_grp
+    base_line = args.base_line
+    ncol = args.ncol
+    toInt = args.toInt
+
+    if prefix:
+        outfile = prefix+".grp"
+    else:
+        basename = os.path.basename(first_grp)
+        filestem = os.path.splitext(basename)[0]
+        outfile = filestem+"_subtracted.grp"
+
+    # read in first one, sum the others, then divide by n (if mode == average)
+    first_headers, first_grp_arrays = read_grp(first_grp, ncol)
+    second_headers, second_grp_arrays = read_grp(second_grp, ncol)
+    assert len(second_grp_arrays) == len(first_grp_arrays), "The input grp files have different number of columns!"
+    for i, second_grp_arr in enumerate(second_grp_arrays):
+            first_grp_arrays[i] -= second_grp_arr
+            first_grp_arrays[i][first_grp_arrays[i] < 0] = base_line
+
+    # make rev to minus, write out averaged grp file
+    if ncol == 2:
+        first_grp_arrays[1] *= -1
+        write_grp(outfile, first_headers, first_grp_arrays, ncol, toInt)
+    else:
+        first_grp_arrays[2] *= -1
+        first_grp_arrays[3] *= -1
+        write_grp(outfile, first_headers, first_grp_arrays, ncol, toInt)
+
+
 
 
 
@@ -259,13 +306,28 @@ def main():
     parser_wig2grp.add_argument('-r', "--rev_wig", help="reverse wig file generated by RSeQC::bam2wig.py")
     parser_wig2grp.set_defaults(func=wig2grp)
 
-    # ------- #
-    # average #
-    # ------- #
-    parser_average = subparsers.add_parser('average', parents=[parent_parser], help='average individual grp files into one grp file')
-    parser_average.add_argument("input_grps", nargs="+", help="grp files to be averaged")
-    parser_average.add_argument("ncol", type=int, choices=[2, 4], default=2, help="number of value columns in grp file")
-    parser_average.set_defaults(func=average)
+    # ----- #
+    # merge #
+    # ----- #
+    parser_merge = subparsers.add_parser('merge', parents=[parent_parser], help='average/sumup individual grp files into one grp file')
+    parser_merge.add_argument("input_grps", nargs="+", help="grp files to be averaged/summed up")
+    parser_merge.add_argument("ncol", type=int, choices=[2, 4], default=2, help="number of value columns in grp file")
+    mode_help = "average: sum the values, then take avarage of the sum. \nsumup: sum the values in each grp column"
+    parser_merge.add_argument("-m", "--mode", required=False, choices=["average", "sumup"], default="average", help=mode_help)
+    parser_merge.set_defaults(func=merge)
+
+
+    # -------- #
+    # subtract #
+    # -------- #
+    parser_subtract = subparsers.add_parser('subtract', parents=[parent_parser], help='subtract two grp files')
+    parser_subtract.add_argument("first_grp", help="first grp file to be subtracted")
+    parser_subtract.add_argument('second_grp', help='second grp file used to subtract')
+    parser_subtract.add_argument("ncol", type=int, choices=[2, 4], default=2, help="number of value columns in grp file")
+    baseline_help = 'non-negative value to be used replace negetive values produced by subtraction, default = 0.'
+    parser_subtract.add_argument('-b', '--base_line', type=int, default=0, help=baseline_help)
+    parser_subtract.set_defaults(func=subtract)
+
 
     # parse args
     args = parser.parse_args()
