@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-
+# Copyright (C) 2016  Shengwei Hou
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,7 @@ import sys
 import argparse
 import numpy as np
 from Bio import SeqIO
+from collections import Counter
 
 
 def get_genome_size(input_file):
@@ -49,14 +50,16 @@ def get_chromArrayDict(genomeSizeDict, wig):
             if line.startswith("variableStep"):
                 chrom = line.strip().split("chrom=")[-1].strip()
                 if not chrom in genomeSizeDict:
-                    print >> sys.stderr, "ERROR: chromosome %s in your wig file was not found in your genome reference! "%chrom
+                    print >> sys.stderr, "ERROR: chromosome %s in your wig file was not found " \
+                                         "in your genome reference! "%chrom
                     sys.exit(1)
             else:
                 line = line.strip().split("\t")
                 index = int(line[0])-1
                 value = float(line[1])
                 if index >= len(chromArrayDict[chrom]):
-                    print >> sys.stderr, "ATTENTION: Mapped position at %d was out of genome length %d, on chromosome %s"%(index, genomeSizeDict[chrom], chrom)
+                    print >> sys.stderr, "ATTENTION: Mapped position at %d was out of genome length %d, " \
+                                         "on chromosome %s"%(index, genomeSizeDict[chrom], chrom)
                     continue
                 chromArrayDict[chrom][index] = value
 
@@ -204,6 +207,13 @@ def write_grp(filename, headers, arrays, toInt):
 
     ncol = get_ncol(headers)
 
+    # make rev to minus
+    if ncol == 2:
+        arrays[1] *= -1
+    else:
+        arrays[2] *= -1
+        arrays[3] *= -1
+
     # initialize base array as long as genome length
     pos_array = np.arange(len(arrays[0]))
     pos_array += 1
@@ -266,12 +276,6 @@ def merge(args):
         for i, arr in enumerate(grp_arrays):
             grp_arrays[i] = arr/n
 
-    # make rev to minus, write out averaged grp file
-    if ncol == 2:
-        grp_arrays[1] *= -1
-    else:
-        grp_arrays[2] *= -1
-        grp_arrays[3] *= -1
     write_grp(outfile, headers, grp_arrays, toInt)
 
 
@@ -301,12 +305,6 @@ def subtract(args):
             first_grp_arrays[i] -= second_grp_arr
             first_grp_arrays[i][first_grp_arrays[i] < 0] = base_line
 
-    # make rev to minus, write out averaged grp file
-    if ncol == 2:
-        first_grp_arrays[1] *= -1
-    else:
-        first_grp_arrays[2] *= -1
-        first_grp_arrays[3] *= -1
     write_grp(outfile, first_headers, first_grp_arrays, toInt)
 
 
@@ -320,7 +318,8 @@ def summarize(args):
     length = len(arrays[0])
     colnames = headers[0].lstrip("# BASE").split()
 
-    print "Input grp file contains %d columns (excluding pos_array), each column has %d values"%(ncol, length)
+    print "Input grp file contains %d columns (excluding pos_array), " \
+          "each column has %d values"%(ncol, length)
     print "The colnames includes:"
     print "\t", "\t".join(colnames)
 
@@ -390,7 +389,8 @@ def normalize(args):
     # do normalization
     headers, arrays = read_grp(input_grp)
     ncol = get_ncol(headers)
-    assert ncol == 2, "normalize only support 2 column grp file, please slice your grp file first!"
+    assert ncol == 2, \
+        "normalize only supports 2 column grp file, please slice your grp file first!"
     total = sum(arrays[0]) + sum(arrays[1])
     new_arrays = []
     for arr in arrays:
@@ -399,6 +399,113 @@ def normalize(args):
 
     write_grp(outfile, headers, new_arrays, toInt)
 
+
+def combine(args):
+    """
+    combine 2 column coverage grp file and 2 column tss grp file into one
+    """
+    input_cov_grp = args.input_cov_grp
+    input_tss_grp = args.input_tss_grp
+    prefix = args.prefix
+    toInt = args.toInt
+
+    if prefix:
+        outfile = prefix + ".grp"
+    else:
+        basename = os.path.basename(input_cov_grp)
+        filestem = os.path.splitext(basename)[0]
+        outfile = filestem + "_combined.grp"
+
+    # do combine
+    cov_headers, cov_arrays = read_grp(input_cov_grp)
+    tss_headers, tss_arrays = read_grp(input_tss_grp)
+
+    assert get_ncol(cov_headers) == get_ncol(tss_headers) == 2, \
+        "combine only supports 2 column grp file, please slice your grp file first!"
+
+    # combine headers
+    cov_colnames = cov_headers[0].lstrip("# BASE").split()
+    cov_colours = cov_headers[1].lstrip("# colour").split()
+    tss_colnames = tss_headers[0].lstrip("# BASE").split()
+    tss_colours = tss_headers[1].lstrip("# colour").split()
+    combined_colnames = [cov_colnames[0], tss_colnames[0], cov_colnames[1], tss_colnames[1]]
+    combined_colours = [cov_colours[0], tss_colours[0], cov_colours[1], tss_colours[1]]
+    combined_headers = ["# BASE " + " ".join(combined_colnames), "# colour " + " ".join(combined_colours)]
+
+    # combine arrays
+    combined_arrays = [cov_arrays[0], tss_arrays[0], cov_arrays[1], tss_arrays[1]]
+
+    write_grp(outfile, combined_headers, combined_arrays, toInt)
+
+
+def group_tss(tss_arr, before=5, after=5):
+    """
+    :param tss_arr: input tss array
+    :param before:  upstream region
+    :param after:   downstream region
+    :return:
+    """
+    total_length = len(tss_arr)
+
+    # count how many tss we have before grouping
+    oldNum = Counter(tss_arr > 0)[True]
+
+    # index array for sorted tss_arr from small to large value
+    sort_index = np.argsort(tss_arr)
+    # inverse to make high TSS number's index in beginning
+    sort_index = sort_index[::-1]
+
+    for index in sort_index:
+        # maybe this pos is already merged to a neighboring highly expressed tss
+        if tss_arr[index] == 0:
+            continue
+
+        else:
+            # get leftmost and rightmost pos of this region, rightmost is not inclusive
+            fore_index = index - before if index - before > 0 else 0
+            back_index = index + after + 1 if index + after + 1 < total_length else total_length
+
+            # get sum of this region, assign it to tss_arr[index]
+            tss_arr[index] = tss_arr[index] + \
+                             np.sum(tss_arr[fore_index:index]) + \
+                             np.sum(tss_arr[index + 1:back_index])
+
+            # set before and after region of tss_arr[index] to 0
+            tss_arr[fore_index:index] = 0
+            tss_arr[index + 1:back_index] = 0
+
+    # count how many tss we have after grouping
+    newNum = Counter(tss_arr > 0)[True]
+    print "Grouped %d raw tss into %d raw tss in region %d upstream and %d downstream" % (oldNum, newNum, before, after)
+
+    return tss_arr
+
+
+def aggregate(args):
+    """
+    aggregate tss from surrounding positons, to increase the signal of most likely tss, and remove blurry signals
+    """
+    input_grp = args.input_tss_grp
+    length = args.length
+    prefix = args.prefix
+    toInt = args.toInt
+
+    if prefix:
+        outfile = prefix + ".grp"
+    else:
+        basename = os.path.basename(input_grp)
+        filestem = os.path.splitext(basename)[0]
+        outfile = filestem + "_aggregated.grp"
+
+    headers, arrays = read_grp(input_grp)
+
+    # group tss
+    new_arrays = []
+    for arr in arrays:
+        new_arr = group_tss(arr, before=length, after=length)
+        new_arrays.append(new_arr)
+
+    write_grp(outfile, headers, new_arrays, toInt)
 
 
 
@@ -413,7 +520,8 @@ def main():
     # parent parser, to specify shared arguments, inherited by subparsers
     parent_parser = argparse.ArgumentParser(add_help=False)
     parent_parser.add_argument("-p", "--prefix", required=False, help="output prefix for grp file")
-    parent_parser.add_argument("-t", "--toInt", required=False, action="store_true", default=True, help="write out integer values")
+    parent_parser.add_argument("-t", "--toInt", required=False, action="store_true", default=True,
+                               help="write out integer values")
 
 
     # subparsers
@@ -423,7 +531,8 @@ def main():
     # wig2grp #
     # ------- #
     wig2grp_desc="Convert variableStep forward and reverse wig files into fixedStep grp file, to visualize in Artemis"
-    parser_wig2grp = subparsers.add_parser('wig2grp', parents=[parent_parser], help='convert wiggle format to grp format', description=wig2grp_desc)
+    parser_wig2grp = subparsers.add_parser('wig2grp', parents=[parent_parser],
+                                           help='convert wiggle format to grp format', description=wig2grp_desc)
     parser_wig2grp.add_argument("genomeFasta", help="genome fasta file that used in the mapping")
     parser_wig2grp.add_argument('-f', "--fwd_wig", help="forward wig file generated by RSeQC::bam2wig.py")
     parser_wig2grp.add_argument('-r', "--rev_wig", help="reverse wig file generated by RSeQC::bam2wig.py")
@@ -432,10 +541,12 @@ def main():
     # ----- #
     # merge #
     # ----- #
-    parser_merge = subparsers.add_parser('merge', parents=[parent_parser], help='average/sumup individual grp files into one grp file')
+    parser_merge = subparsers.add_parser('merge', parents=[parent_parser],
+                                         help='average/sumup individual grp files into one grp file')
     parser_merge.add_argument("input_grps", nargs="+", help="grp files to be averaged/summed up")
     mode_help = "average: sum the values, then take avarage of the sum. \nsumup: sum the values in each grp column"
-    parser_merge.add_argument("-m", "--mode", required=False, choices=["average", "sumup"], default="average", help=mode_help)
+    parser_merge.add_argument("-m", "--mode", required=False, choices=["average", "sumup"],
+                              default="average", help=mode_help)
     parser_merge.set_defaults(func=merge)
 
 
@@ -463,16 +574,40 @@ def main():
     # ----- #
     parser_slice = subparsers.add_parser('slice', parents=[parent_parser], help='slice input grp file')
     parser_slice.add_argument("input_grp", help="input grp file to be sliced")
-    parser_slice.add_argument("type", choices=['coverage', 'tss'], default='coverage', help='which type of columns to slice')
+    parser_slice.add_argument("type", choices=['coverage', 'tss'], default='coverage',
+                              help='which type of columns to slice')
     parser_slice.set_defaults(func=slice)
+
 
     # --------- #
     # normalize #
     # --------- #
     parser_normalize = subparsers.add_parser('normalize', parents=[parent_parser], help='normalize input grp file')
     parser_normalize.add_argument('input_grp', help='input grp file to be normalized')
-    parser_normalize.add_argument('multiplier', type=int, help='the number to be multiplied after library normalization')
+    parser_normalize.add_argument('multiplier', type=int,
+                                  help='the number to be multiplied after library normalization')
     parser_normalize.set_defaults(func=normalize)
+
+
+    # -------- #
+    #  combine #
+    # -------- #
+    parser_combine = subparsers.add_parser('combine', parents=[parent_parser],
+                                           help='combine coverage and tss grp into one grp file')
+    parser_combine.add_argument('input_cov_grp', help='input coverage grp file')
+    parser_combine.add_argument('input_tss_grp', help='input tss grp file')
+    parser_combine.set_defaults(func=combine)
+
+
+    # --------- #
+    # aggregate #
+    # --------- #
+    parser_aggregate = subparsers.add_parser('aggregate', parents=[parent_parser],
+                                             help='aggregate tss from surrounding positions')
+    parser_aggregate.add_argument('input_tss_grp', help='input tss grp file')
+    parser_aggregate.add_argument('-l', '--length', type=int, default=5, help='the length of upstream/downstream region')
+    parser_aggregate.set_defaults(func=aggregate)
+
 
 
     # ----------------------- #
