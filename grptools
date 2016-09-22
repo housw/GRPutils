@@ -369,6 +369,7 @@ def slice(args):
 
 
 def normalize(args):
+    # TODO : make it works for both tss and coverage, both can be normalized by the sum of tss counts
     """
     normalize input grp file, this function only works for 2 column coverage/tss grp file,
     it will first sum up all the fwd and rev values, divide each value against the sum, then
