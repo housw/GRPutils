@@ -1,0 +1,497 @@
+##gff-version 3
+##sequence-region Alteromonas2242plasmid 1 237311
+Alteromonas2242plasmid	prokka	gene	422	670	.	-	.	ID=ALT2242p_00001_gene;locus_tag=ALT2242p_00001
+Alteromonas2242plasmid	Prodigal:2.6	CDS	422	670	.	-	0	ID=ALT2242p_00001;Parent=ALT2242p_00001_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00001;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	764	1372	.	+	.	ID=ALT2242p_00002_gene;locus_tag=ALT2242p_00002
+Alteromonas2242plasmid	Prodigal:2.6	CDS	764	1372	.	+	0	ID=ALT2242p_00002;Parent=ALT2242p_00002_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00002;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	1434	2000	.	+	.	ID=ALT2242p_00003_gene;Name=sprT;gene=sprT;locus_tag=ALT2242p_00003
+Alteromonas2242plasmid	Prodigal:2.6	CDS	1434	2000	.	+	0	ID=ALT2242p_00003;Parent=ALT2242p_00003_gene;Name=sprT;gene=sprT;inference=ab initio prediction:Prodigal:2.6,protein motif:HAMAP:MF_00746;locus_tag=ALT2242p_00003;product=Protein SprT
+Alteromonas2242plasmid	prokka	gene	2176	3234	.	+	.	ID=ALT2242p_00004_gene;locus_tag=ALT2242p_00004
+Alteromonas2242plasmid	Prodigal:2.6	CDS	2176	3234	.	+	0	ID=ALT2242p_00004;Parent=ALT2242p_00004_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00004;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	3247	3741	.	+	.	ID=ALT2242p_00005_gene;locus_tag=ALT2242p_00005
+Alteromonas2242plasmid	Prodigal:2.6	CDS	3247	3741	.	+	0	ID=ALT2242p_00005;Parent=ALT2242p_00005_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00005;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	3738	3962	.	+	.	ID=ALT2242p_00006_gene;locus_tag=ALT2242p_00006
+Alteromonas2242plasmid	Prodigal:2.6	CDS	3738	3962	.	+	0	ID=ALT2242p_00006;Parent=ALT2242p_00006_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00006;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	3995	4360	.	+	.	ID=ALT2242p_00007_gene;locus_tag=ALT2242p_00007
+Alteromonas2242plasmid	Prodigal:2.6	CDS	3995	4360	.	+	0	ID=ALT2242p_00007;Parent=ALT2242p_00007_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00007;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	4362	4577	.	+	.	ID=ALT2242p_00008_gene;locus_tag=ALT2242p_00008
+Alteromonas2242plasmid	Prodigal:2.6	CDS	4362	4577	.	+	0	ID=ALT2242p_00008;Parent=ALT2242p_00008_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00008;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	4713	5447	.	+	.	ID=ALT2242p_00009_gene;locus_tag=ALT2242p_00009
+Alteromonas2242plasmid	Prodigal:2.6	CDS	4713	5447	.	+	0	ID=ALT2242p_00009;Parent=ALT2242p_00009_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00009;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	5505	5723	.	+	.	ID=ALT2242p_00010_gene;locus_tag=ALT2242p_00010
+Alteromonas2242plasmid	Prodigal:2.6	CDS	5505	5723	.	+	0	ID=ALT2242p_00010;Parent=ALT2242p_00010_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00010;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	5727	6239	.	+	.	ID=ALT2242p_00011_gene;locus_tag=ALT2242p_00011
+Alteromonas2242plasmid	Prodigal:2.6	CDS	5727	6239	.	+	0	ID=ALT2242p_00011;Parent=ALT2242p_00011_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00011;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	6339	6578	.	-	.	ID=ALT2242p_00012_gene;locus_tag=ALT2242p_00012
+Alteromonas2242plasmid	Prodigal:2.6	CDS	6339	6578	.	-	0	ID=ALT2242p_00012;Parent=ALT2242p_00012_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00012;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	6565	6867	.	-	.	ID=ALT2242p_00013_gene;locus_tag=ALT2242p_00013
+Alteromonas2242plasmid	Prodigal:2.6	CDS	6565	6867	.	-	0	ID=ALT2242p_00013;Parent=ALT2242p_00013_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00013;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	6997	7257	.	-	.	ID=ALT2242p_00014_gene;locus_tag=ALT2242p_00014
+Alteromonas2242plasmid	Prodigal:2.6	CDS	6997	7257	.	-	0	ID=ALT2242p_00014;Parent=ALT2242p_00014_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00014;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	7399	7740	.	-	.	ID=ALT2242p_00015_gene;Name=hipB;gene=hipB;locus_tag=ALT2242p_00015
+Alteromonas2242plasmid	Prodigal:2.6	CDS	7399	7740	.	-	0	ID=ALT2242p_00015;Parent=ALT2242p_00015_gene;Name=hipB;gene=hipB;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P23873;locus_tag=ALT2242p_00015;product=Antitoxin HipB
+Alteromonas2242plasmid	prokka	gene	7888	8523	.	-	.	ID=ALT2242p_00016_gene;locus_tag=ALT2242p_00016
+Alteromonas2242plasmid	Prodigal:2.6	CDS	7888	8523	.	-	0	ID=ALT2242p_00016;Parent=ALT2242p_00016_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00016;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	8553	8849	.	-	.	ID=ALT2242p_00017_gene;locus_tag=ALT2242p_00017
+Alteromonas2242plasmid	Prodigal:2.6	CDS	8553	8849	.	-	0	ID=ALT2242p_00017;Parent=ALT2242p_00017_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00017;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	9145	9366	.	-	.	ID=ALT2242p_00018_gene;locus_tag=ALT2242p_00018
+Alteromonas2242plasmid	Prodigal:2.6	CDS	9145	9366	.	-	0	ID=ALT2242p_00018;Parent=ALT2242p_00018_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00018;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	9370	9930	.	-	.	ID=ALT2242p_00019_gene;locus_tag=ALT2242p_00019
+Alteromonas2242plasmid	Prodigal:2.6	CDS	9370	9930	.	-	0	ID=ALT2242p_00019;Parent=ALT2242p_00019_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00019;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	10243	11961	.	+	.	ID=ALT2242p_00020_gene;Name=parB;gene=parB;locus_tag=ALT2242p_00020
+Alteromonas2242plasmid	Prodigal:2.6	CDS	10243	11961	.	+	0	ID=ALT2242p_00020;Parent=ALT2242p_00020_gene;Name=parB;gene=parB;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:Q83AH2;locus_tag=ALT2242p_00020;product=putative chromosome-partitioning protein ParB
+Alteromonas2242plasmid	prokka	gene	12025	12429	.	+	.	ID=ALT2242p_00021_gene;locus_tag=ALT2242p_00021
+Alteromonas2242plasmid	Prodigal:2.6	CDS	12025	12429	.	+	0	ID=ALT2242p_00021;Parent=ALT2242p_00021_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00021;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	12432	12659	.	+	.	ID=ALT2242p_00022_gene;locus_tag=ALT2242p_00022
+Alteromonas2242plasmid	Prodigal:2.6	CDS	12432	12659	.	+	0	ID=ALT2242p_00022;Parent=ALT2242p_00022_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00022;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	12771	14084	.	+	.	ID=ALT2242p_00023_gene;locus_tag=ALT2242p_00023
+Alteromonas2242plasmid	Prodigal:2.6	CDS	12771	14084	.	+	0	ID=ALT2242p_00023;Parent=ALT2242p_00023_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00023;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	14078	14827	.	+	.	ID=ALT2242p_00024_gene;locus_tag=ALT2242p_00024
+Alteromonas2242plasmid	Prodigal:2.6	CDS	14078	14827	.	+	0	ID=ALT2242p_00024;Parent=ALT2242p_00024_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00024;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	14829	15608	.	+	.	ID=ALT2242p_00025_gene;locus_tag=ALT2242p_00025
+Alteromonas2242plasmid	Prodigal:2.6	CDS	14829	15608	.	+	0	ID=ALT2242p_00025;Parent=ALT2242p_00025_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00025;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	16071	17852	.	+	.	ID=ALT2242p_00026_gene;locus_tag=ALT2242p_00026
+Alteromonas2242plasmid	Prodigal:2.6	CDS	16071	17852	.	+	0	ID=ALT2242p_00026;Parent=ALT2242p_00026_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00026;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	17905	18162	.	-	.	ID=ALT2242p_00027_gene;locus_tag=ALT2242p_00027
+Alteromonas2242plasmid	Prodigal:2.6	CDS	17905	18162	.	-	0	ID=ALT2242p_00027;Parent=ALT2242p_00027_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00027;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	18408	18614	.	+	.	ID=ALT2242p_00028_gene;locus_tag=ALT2242p_00028
+Alteromonas2242plasmid	Prodigal:2.6	CDS	18408	18614	.	+	0	ID=ALT2242p_00028;Parent=ALT2242p_00028_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00028;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	18628	18765	.	+	.	ID=ALT2242p_00029_gene;locus_tag=ALT2242p_00029
+Alteromonas2242plasmid	Prodigal:2.6	CDS	18628	18765	.	+	0	ID=ALT2242p_00029;Parent=ALT2242p_00029_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00029;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	18879	19064	.	+	.	ID=ALT2242p_00030_gene;locus_tag=ALT2242p_00030
+Alteromonas2242plasmid	Prodigal:2.6	CDS	18879	19064	.	+	0	ID=ALT2242p_00030;Parent=ALT2242p_00030_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00030;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	19067	19702	.	+	.	ID=ALT2242p_00031_gene;locus_tag=ALT2242p_00031
+Alteromonas2242plasmid	Prodigal:2.6	CDS	19067	19702	.	+	0	ID=ALT2242p_00031;Parent=ALT2242p_00031_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00031;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	19765	20388	.	+	.	ID=ALT2242p_00032_gene;locus_tag=ALT2242p_00032
+Alteromonas2242plasmid	Prodigal:2.6	CDS	19765	20388	.	+	0	ID=ALT2242p_00032;Parent=ALT2242p_00032_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00032;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	20523	21536	.	+	.	ID=ALT2242p_00033_gene;locus_tag=ALT2242p_00033
+Alteromonas2242plasmid	Prodigal:2.6	CDS	20523	21536	.	+	0	ID=ALT2242p_00033;Parent=ALT2242p_00033_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00033;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	21594	22613	.	-	.	ID=ALT2242p_00034_gene;locus_tag=ALT2242p_00034
+Alteromonas2242plasmid	Prodigal:2.6	CDS	21594	22613	.	-	0	ID=ALT2242p_00034;Parent=ALT2242p_00034_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00034;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	22787	23038	.	+	.	ID=ALT2242p_00035_gene;locus_tag=ALT2242p_00035
+Alteromonas2242plasmid	Prodigal:2.6	CDS	22787	23038	.	+	0	ID=ALT2242p_00035;Parent=ALT2242p_00035_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00035;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	23233	23847	.	+	.	ID=ALT2242p_00036_gene;locus_tag=ALT2242p_00036
+Alteromonas2242plasmid	Prodigal:2.6	CDS	23233	23847	.	+	0	ID=ALT2242p_00036;Parent=ALT2242p_00036_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00036;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	23851	24360	.	+	.	ID=ALT2242p_00037_gene;locus_tag=ALT2242p_00037
+Alteromonas2242plasmid	Prodigal:2.6	CDS	23851	24360	.	+	0	ID=ALT2242p_00037;Parent=ALT2242p_00037_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00037;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	24409	24951	.	+	.	ID=ALT2242p_00038_gene;locus_tag=ALT2242p_00038
+Alteromonas2242plasmid	Prodigal:2.6	CDS	24409	24951	.	+	0	ID=ALT2242p_00038;Parent=ALT2242p_00038_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00038;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	25114	25482	.	+	.	ID=ALT2242p_00039_gene;locus_tag=ALT2242p_00039
+Alteromonas2242plasmid	Prodigal:2.6	CDS	25114	25482	.	+	0	ID=ALT2242p_00039;Parent=ALT2242p_00039_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00039;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	25558	25956	.	+	.	ID=ALT2242p_00040_gene;locus_tag=ALT2242p_00040
+Alteromonas2242plasmid	Prodigal:2.6	CDS	25558	25956	.	+	0	ID=ALT2242p_00040;Parent=ALT2242p_00040_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00040;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	26060	26737	.	+	.	ID=ALT2242p_00041_gene;locus_tag=ALT2242p_00041
+Alteromonas2242plasmid	Prodigal:2.6	CDS	26060	26737	.	+	0	ID=ALT2242p_00041;Parent=ALT2242p_00041_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00041;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	26680	26820	.	-	.	ID=ALT2242p_00042_gene;locus_tag=ALT2242p_00042
+Alteromonas2242plasmid	Prodigal:2.6	CDS	26680	26820	.	-	0	ID=ALT2242p_00042;Parent=ALT2242p_00042_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00042;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	26874	27401	.	+	.	ID=ALT2242p_00043_gene;locus_tag=ALT2242p_00043
+Alteromonas2242plasmid	Prodigal:2.6	CDS	26874	27401	.	+	0	ID=ALT2242p_00043;Parent=ALT2242p_00043_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00043;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	27388	27675	.	+	.	ID=ALT2242p_00044_gene;locus_tag=ALT2242p_00044
+Alteromonas2242plasmid	Prodigal:2.6	CDS	27388	27675	.	+	0	ID=ALT2242p_00044;Parent=ALT2242p_00044_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00044;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	27755	28366	.	+	.	ID=ALT2242p_00045_gene;locus_tag=ALT2242p_00045
+Alteromonas2242plasmid	Prodigal:2.6	CDS	27755	28366	.	+	0	ID=ALT2242p_00045;Parent=ALT2242p_00045_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00045;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	28553	29122	.	+	.	ID=ALT2242p_00046_gene;locus_tag=ALT2242p_00046
+Alteromonas2242plasmid	Prodigal:2.6	CDS	28553	29122	.	+	0	ID=ALT2242p_00046;Parent=ALT2242p_00046_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00046;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	29529	29822	.	+	.	ID=ALT2242p_00047_gene;locus_tag=ALT2242p_00047
+Alteromonas2242plasmid	Prodigal:2.6	CDS	29529	29822	.	+	0	ID=ALT2242p_00047;Parent=ALT2242p_00047_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00047;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	29886	30266	.	+	.	ID=ALT2242p_00048_gene;locus_tag=ALT2242p_00048
+Alteromonas2242plasmid	Prodigal:2.6	CDS	29886	30266	.	+	0	ID=ALT2242p_00048;Parent=ALT2242p_00048_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00048;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	30436	30732	.	-	.	ID=ALT2242p_00049_gene;locus_tag=ALT2242p_00049
+Alteromonas2242plasmid	Prodigal:2.6	CDS	30436	30732	.	-	0	ID=ALT2242p_00049;Parent=ALT2242p_00049_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00049;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	30776	31399	.	+	.	ID=ALT2242p_00050_gene;locus_tag=ALT2242p_00050
+Alteromonas2242plasmid	Prodigal:2.6	CDS	30776	31399	.	+	0	ID=ALT2242p_00050;Parent=ALT2242p_00050_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00050;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	31641	31910	.	+	.	ID=ALT2242p_00051_gene;locus_tag=ALT2242p_00051
+Alteromonas2242plasmid	Prodigal:2.6	CDS	31641	31910	.	+	0	ID=ALT2242p_00051;Parent=ALT2242p_00051_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00051;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	31966	32397	.	-	.	ID=ALT2242p_00052_gene;locus_tag=ALT2242p_00052
+Alteromonas2242plasmid	Prodigal:2.6	CDS	31966	32397	.	-	0	ID=ALT2242p_00052;Parent=ALT2242p_00052_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00052;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	32435	32653	.	-	.	ID=ALT2242p_00053_gene;locus_tag=ALT2242p_00053
+Alteromonas2242plasmid	Prodigal:2.6	CDS	32435	32653	.	-	0	ID=ALT2242p_00053;Parent=ALT2242p_00053_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00053;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	32841	33281	.	+	.	ID=ALT2242p_00054_gene;locus_tag=ALT2242p_00054
+Alteromonas2242plasmid	Prodigal:2.6	CDS	32841	33281	.	+	0	ID=ALT2242p_00054;Parent=ALT2242p_00054_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00054;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	33539	33895	.	+	.	ID=ALT2242p_00055_gene;locus_tag=ALT2242p_00055
+Alteromonas2242plasmid	Prodigal:2.6	CDS	33539	33895	.	+	0	ID=ALT2242p_00055;Parent=ALT2242p_00055_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00055;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	33895	34647	.	+	.	ID=ALT2242p_00056_gene;locus_tag=ALT2242p_00056
+Alteromonas2242plasmid	Prodigal:2.6	CDS	33895	34647	.	+	0	ID=ALT2242p_00056;Parent=ALT2242p_00056_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00056;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	34714	35469	.	+	.	ID=ALT2242p_00057_gene;locus_tag=ALT2242p_00057
+Alteromonas2242plasmid	Prodigal:2.6	CDS	34714	35469	.	+	0	ID=ALT2242p_00057;Parent=ALT2242p_00057_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00057;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	35516	36199	.	-	.	ID=ALT2242p_00058_gene;locus_tag=ALT2242p_00058
+Alteromonas2242plasmid	Prodigal:2.6	CDS	35516	36199	.	-	0	ID=ALT2242p_00058;Parent=ALT2242p_00058_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00058;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	36376	36810	.	+	.	ID=ALT2242p_00059_gene;locus_tag=ALT2242p_00059
+Alteromonas2242plasmid	Prodigal:2.6	CDS	36376	36810	.	+	0	ID=ALT2242p_00059;Parent=ALT2242p_00059_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00059;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	37028	37333	.	+	.	ID=ALT2242p_00060_gene;locus_tag=ALT2242p_00060
+Alteromonas2242plasmid	Prodigal:2.6	CDS	37028	37333	.	+	0	ID=ALT2242p_00060;Parent=ALT2242p_00060_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00060;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	37437	37835	.	+	.	ID=ALT2242p_00061_gene;locus_tag=ALT2242p_00061
+Alteromonas2242plasmid	Prodigal:2.6	CDS	37437	37835	.	+	0	ID=ALT2242p_00061;Parent=ALT2242p_00061_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00061;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	37912	38175	.	+	.	ID=ALT2242p_00062_gene;locus_tag=ALT2242p_00062
+Alteromonas2242plasmid	Prodigal:2.6	CDS	37912	38175	.	+	0	ID=ALT2242p_00062;Parent=ALT2242p_00062_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00062;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	39035	39253	.	+	.	ID=ALT2242p_00063_gene;locus_tag=ALT2242p_00063
+Alteromonas2242plasmid	Prodigal:2.6	CDS	39035	39253	.	+	0	ID=ALT2242p_00063;Parent=ALT2242p_00063_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00063;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	39231	40439	.	+	.	ID=ALT2242p_00064_gene;locus_tag=ALT2242p_00064
+Alteromonas2242plasmid	Prodigal:2.6	CDS	39231	40439	.	+	0	ID=ALT2242p_00064;Parent=ALT2242p_00064_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00064;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	40841	41257	.	-	.	ID=ALT2242p_00065_gene;locus_tag=ALT2242p_00065
+Alteromonas2242plasmid	Prodigal:2.6	CDS	40841	41257	.	-	0	ID=ALT2242p_00065;Parent=ALT2242p_00065_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00065;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	41710	42705	.	-	.	ID=ALT2242p_00066_gene;locus_tag=ALT2242p_00066
+Alteromonas2242plasmid	Prodigal:2.6	CDS	41710	42705	.	-	0	ID=ALT2242p_00066;Parent=ALT2242p_00066_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00066;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	42733	42912	.	-	.	ID=ALT2242p_00067_gene;locus_tag=ALT2242p_00067
+Alteromonas2242plasmid	Prodigal:2.6	CDS	42733	42912	.	-	0	ID=ALT2242p_00067;Parent=ALT2242p_00067_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00067;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	43059	43550	.	+	.	ID=ALT2242p_00068_gene;locus_tag=ALT2242p_00068
+Alteromonas2242plasmid	Prodigal:2.6	CDS	43059	43550	.	+	0	ID=ALT2242p_00068;Parent=ALT2242p_00068_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00068;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	43547	44398	.	+	.	ID=ALT2242p_00069_gene;locus_tag=ALT2242p_00069
+Alteromonas2242plasmid	Prodigal:2.6	CDS	43547	44398	.	+	0	ID=ALT2242p_00069;Parent=ALT2242p_00069_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00069;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	44395	45597	.	+	.	ID=ALT2242p_00070_gene;Name=pilT;gene=pilT;locus_tag=ALT2242p_00070
+Alteromonas2242plasmid	Prodigal:2.6	CDS	44395	45597	.	+	0	ID=ALT2242p_00070;Parent=ALT2242p_00070_gene;Name=pilT;gene=pilT;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P24559;locus_tag=ALT2242p_00070;product=Twitching mobility protein
+Alteromonas2242plasmid	prokka	gene	45597	45914	.	+	.	ID=ALT2242p_00071_gene;locus_tag=ALT2242p_00071
+Alteromonas2242plasmid	Prodigal:2.6	CDS	45597	45914	.	+	0	ID=ALT2242p_00071;Parent=ALT2242p_00071_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00071;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	45904	46947	.	+	.	ID=ALT2242p_00072_gene;Name=parM;gene=parM;locus_tag=ALT2242p_00072
+Alteromonas2242plasmid	Prodigal:2.6	CDS	45904	46947	.	+	0	ID=ALT2242p_00072;Parent=ALT2242p_00072_gene;Name=parM;gene=parM;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P11904;locus_tag=ALT2242p_00072;product=Plasmid segregation protein ParM
+Alteromonas2242plasmid	prokka	gene	46963	47502	.	+	.	ID=ALT2242p_00073_gene;locus_tag=ALT2242p_00073
+Alteromonas2242plasmid	Prodigal:2.6	CDS	46963	47502	.	+	0	ID=ALT2242p_00073;Parent=ALT2242p_00073_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00073;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	47499	48077	.	+	.	ID=ALT2242p_00074_gene;locus_tag=ALT2242p_00074
+Alteromonas2242plasmid	Prodigal:2.6	CDS	47499	48077	.	+	0	ID=ALT2242p_00074;Parent=ALT2242p_00074_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00074;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	48093	50219	.	-	.	ID=ALT2242p_00075_gene;locus_tag=ALT2242p_00075
+Alteromonas2242plasmid	Prodigal:2.6	CDS	48093	50219	.	-	0	ID=ALT2242p_00075;Parent=ALT2242p_00075_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00075;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	50418	50894	.	+	.	ID=ALT2242p_00076_gene;locus_tag=ALT2242p_00076
+Alteromonas2242plasmid	Prodigal:2.6	CDS	50418	50894	.	+	0	ID=ALT2242p_00076;Parent=ALT2242p_00076_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00076;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	50891	51610	.	+	.	ID=ALT2242p_00077_gene;locus_tag=ALT2242p_00077
+Alteromonas2242plasmid	Prodigal:2.6	CDS	50891	51610	.	+	0	ID=ALT2242p_00077;Parent=ALT2242p_00077_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00077;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	51594	52652	.	+	.	ID=ALT2242p_00078_gene;locus_tag=ALT2242p_00078
+Alteromonas2242plasmid	Prodigal:2.6	CDS	51594	52652	.	+	0	ID=ALT2242p_00078;Parent=ALT2242p_00078_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00078;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	52654	53640	.	+	.	ID=ALT2242p_00079_gene;locus_tag=ALT2242p_00079
+Alteromonas2242plasmid	Prodigal:2.6	CDS	52654	53640	.	+	0	ID=ALT2242p_00079;Parent=ALT2242p_00079_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00079;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	53637	54641	.	+	.	ID=ALT2242p_00080_gene;locus_tag=ALT2242p_00080
+Alteromonas2242plasmid	Prodigal:2.6	CDS	53637	54641	.	+	0	ID=ALT2242p_00080;Parent=ALT2242p_00080_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00080;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	54738	55970	.	+	.	ID=ALT2242p_00081_gene;locus_tag=ALT2242p_00081
+Alteromonas2242plasmid	Prodigal:2.6	CDS	54738	55970	.	+	0	ID=ALT2242p_00081;Parent=ALT2242p_00081_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00081;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	56020	57039	.	-	.	ID=ALT2242p_00082_gene;locus_tag=ALT2242p_00082
+Alteromonas2242plasmid	Prodigal:2.6	CDS	56020	57039	.	-	0	ID=ALT2242p_00082;Parent=ALT2242p_00082_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00082;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	57296	59695	.	-	.	ID=ALT2242p_00083_gene;locus_tag=ALT2242p_00083
+Alteromonas2242plasmid	Prodigal:2.6	CDS	57296	59695	.	-	0	ID=ALT2242p_00083;Parent=ALT2242p_00083_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00083;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	59688	60986	.	-	.	ID=ALT2242p_00084_gene;locus_tag=ALT2242p_00084
+Alteromonas2242plasmid	Prodigal:2.6	CDS	59688	60986	.	-	0	ID=ALT2242p_00084;Parent=ALT2242p_00084_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00084;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	60973	61614	.	-	.	ID=ALT2242p_00085_gene;locus_tag=ALT2242p_00085
+Alteromonas2242plasmid	Prodigal:2.6	CDS	60973	61614	.	-	0	ID=ALT2242p_00085;Parent=ALT2242p_00085_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00085;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	61611	62411	.	-	.	ID=ALT2242p_00086_gene;locus_tag=ALT2242p_00086
+Alteromonas2242plasmid	Prodigal:2.6	CDS	61611	62411	.	-	0	ID=ALT2242p_00086;Parent=ALT2242p_00086_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00086;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	62408	63055	.	-	.	ID=ALT2242p_00087_gene;locus_tag=ALT2242p_00087
+Alteromonas2242plasmid	Prodigal:2.6	CDS	62408	63055	.	-	0	ID=ALT2242p_00087;Parent=ALT2242p_00087_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00087;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	63142	76827	.	-	.	ID=ALT2242p_00088_gene;locus_tag=ALT2242p_00088
+Alteromonas2242plasmid	Prodigal:2.6	CDS	63142	76827	.	-	0	ID=ALT2242p_00088;Parent=ALT2242p_00088_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00088;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	76829	78331	.	-	.	ID=ALT2242p_00089_gene;locus_tag=ALT2242p_00089
+Alteromonas2242plasmid	Prodigal:2.6	CDS	76829	78331	.	-	0	ID=ALT2242p_00089;Parent=ALT2242p_00089_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00089;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	78376	79395	.	-	.	ID=ALT2242p_00090_gene;locus_tag=ALT2242p_00090
+Alteromonas2242plasmid	Prodigal:2.6	CDS	78376	79395	.	-	0	ID=ALT2242p_00090;Parent=ALT2242p_00090_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00090;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	79538	79933	.	+	.	ID=ALT2242p_00091_gene;locus_tag=ALT2242p_00091
+Alteromonas2242plasmid	Prodigal:2.6	CDS	79538	79933	.	+	0	ID=ALT2242p_00091;Parent=ALT2242p_00091_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00091;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	79930	80586	.	+	.	ID=ALT2242p_00092_gene;locus_tag=ALT2242p_00092
+Alteromonas2242plasmid	Prodigal:2.6	CDS	79930	80586	.	+	0	ID=ALT2242p_00092;Parent=ALT2242p_00092_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00092;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	80583	81293	.	+	.	ID=ALT2242p_00093_gene;locus_tag=ALT2242p_00093
+Alteromonas2242plasmid	Prodigal:2.6	CDS	80583	81293	.	+	0	ID=ALT2242p_00093;Parent=ALT2242p_00093_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00093;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	81296	82228	.	+	.	ID=ALT2242p_00094_gene;locus_tag=ALT2242p_00094
+Alteromonas2242plasmid	Prodigal:2.6	CDS	81296	82228	.	+	0	ID=ALT2242p_00094;Parent=ALT2242p_00094_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00094;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	82218	88061	.	+	.	ID=ALT2242p_00095_gene;locus_tag=ALT2242p_00095
+Alteromonas2242plasmid	Prodigal:2.6	CDS	82218	88061	.	+	0	ID=ALT2242p_00095;Parent=ALT2242p_00095_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00095;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	88176	89180	.	+	.	ID=ALT2242p_00096_gene;locus_tag=ALT2242p_00096
+Alteromonas2242plasmid	Prodigal:2.6	CDS	88176	89180	.	+	0	ID=ALT2242p_00096;Parent=ALT2242p_00096_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00096;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	89183	89722	.	+	.	ID=ALT2242p_00097_gene;locus_tag=ALT2242p_00097
+Alteromonas2242plasmid	Prodigal:2.6	CDS	89183	89722	.	+	0	ID=ALT2242p_00097;Parent=ALT2242p_00097_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00097;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	89742	90128	.	+	.	ID=ALT2242p_00098_gene;locus_tag=ALT2242p_00098
+Alteromonas2242plasmid	Prodigal:2.6	CDS	89742	90128	.	+	0	ID=ALT2242p_00098;Parent=ALT2242p_00098_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00098;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	90165	90743	.	+	.	ID=ALT2242p_00099_gene;locus_tag=ALT2242p_00099
+Alteromonas2242plasmid	Prodigal:2.6	CDS	90165	90743	.	+	0	ID=ALT2242p_00099;Parent=ALT2242p_00099_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00099;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	90755	93805	.	+	.	ID=ALT2242p_00100_gene;locus_tag=ALT2242p_00100
+Alteromonas2242plasmid	Prodigal:2.6	CDS	90755	93805	.	+	0	ID=ALT2242p_00100;Parent=ALT2242p_00100_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00100;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	93826	94719	.	-	.	ID=ALT2242p_00101_gene;locus_tag=ALT2242p_00101
+Alteromonas2242plasmid	Prodigal:2.6	CDS	93826	94719	.	-	0	ID=ALT2242p_00101;Parent=ALT2242p_00101_gene;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P16525;locus_tag=ALT2242p_00101;note=DNA replication terminus site-binding protein;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	94864	95667	.	+	.	ID=ALT2242p_00102_gene;locus_tag=ALT2242p_00102
+Alteromonas2242plasmid	Prodigal:2.6	CDS	94864	95667	.	+	0	ID=ALT2242p_00102;Parent=ALT2242p_00102_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00102;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	95879	96859	.	-	.	ID=ALT2242p_00103_gene;locus_tag=ALT2242p_00103
+Alteromonas2242plasmid	Prodigal:2.6	CDS	95879	96859	.	-	0	ID=ALT2242p_00103;Parent=ALT2242p_00103_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00103;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	97046	97762	.	-	.	ID=ALT2242p_00104_gene;locus_tag=ALT2242p_00104
+Alteromonas2242plasmid	Prodigal:2.6	CDS	97046	97762	.	-	0	ID=ALT2242p_00104;Parent=ALT2242p_00104_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00104;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	97752	98375	.	-	.	ID=ALT2242p_00105_gene;locus_tag=ALT2242p_00105
+Alteromonas2242plasmid	Prodigal:2.6	CDS	97752	98375	.	-	0	ID=ALT2242p_00105;Parent=ALT2242p_00105_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00105;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	98537	99508	.	+	.	ID=ALT2242p_00106_gene;Name=xerC_1;gene=xerC_1;locus_tag=ALT2242p_00106
+Alteromonas2242plasmid	Prodigal:2.6	CDS	98537	99508	.	+	0	ID=ALT2242p_00106;Parent=ALT2242p_00106_gene;Name=xerC_1;gene=xerC_1;inference=ab initio prediction:Prodigal:2.6,protein motif:HAMAP:MF_01808;locus_tag=ALT2242p_00106;product=Tyrosine recombinase XerC
+Alteromonas2242plasmid	prokka	gene	99968	100489	.	-	.	ID=ALT2242p_00107_gene;locus_tag=ALT2242p_00107
+Alteromonas2242plasmid	Prodigal:2.6	CDS	99968	100489	.	-	0	ID=ALT2242p_00107;Parent=ALT2242p_00107_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00107;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	100572	100922	.	-	.	ID=ALT2242p_00108_gene;locus_tag=ALT2242p_00108
+Alteromonas2242plasmid	Prodigal:2.6	CDS	100572	100922	.	-	0	ID=ALT2242p_00108;Parent=ALT2242p_00108_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00108;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	101520	101705	.	+	.	ID=ALT2242p_00109_gene;locus_tag=ALT2242p_00109
+Alteromonas2242plasmid	Prodigal:2.6	CDS	101520	101705	.	+	0	ID=ALT2242p_00109;Parent=ALT2242p_00109_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00109;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	101688	101888	.	-	.	ID=ALT2242p_00110_gene;locus_tag=ALT2242p_00110
+Alteromonas2242plasmid	Prodigal:2.6	CDS	101688	101888	.	-	0	ID=ALT2242p_00110;Parent=ALT2242p_00110_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00110;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	102459	103475	.	-	.	ID=ALT2242p_00111_gene;locus_tag=ALT2242p_00111
+Alteromonas2242plasmid	Prodigal:2.6	CDS	102459	103475	.	-	0	ID=ALT2242p_00111;Parent=ALT2242p_00111_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00111;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	103675	106539	.	+	.	ID=ALT2242p_00112_gene;locus_tag=ALT2242p_00112
+Alteromonas2242plasmid	Prodigal:2.6	CDS	103675	106539	.	+	0	ID=ALT2242p_00112;Parent=ALT2242p_00112_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00112;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	106566	107132	.	-	.	ID=ALT2242p_00113_gene;Name=hin;gene=hin;locus_tag=ALT2242p_00113
+Alteromonas2242plasmid	Prodigal:2.6	CDS	106566	107132	.	-	0	ID=ALT2242p_00113;Parent=ALT2242p_00113_gene;Name=hin;gene=hin;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P03013;locus_tag=ALT2242p_00113;product=DNA-invertase hin
+Alteromonas2242plasmid	prokka	gene	108050	108802	.	+	.	ID=ALT2242p_00114_gene;Name=paaA;gene=paaA;locus_tag=ALT2242p_00114
+Alteromonas2242plasmid	Prodigal:2.6	CDS	108050	108802	.	+	0	ID=ALT2242p_00114;Parent=ALT2242p_00114_gene;eC_number=1.14.13.149;Name=paaA;gene=paaA;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P76077;locus_tag=ALT2242p_00114;product=1%2C2-phenylacetyl-CoA epoxidase%2C subunit A
+Alteromonas2242plasmid	prokka	gene	108826	109959	.	+	.	ID=ALT2242p_00115_gene;locus_tag=ALT2242p_00115
+Alteromonas2242plasmid	Prodigal:2.6	CDS	108826	109959	.	+	0	ID=ALT2242p_00115;Parent=ALT2242p_00115_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00115;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	109959	110405	.	+	.	ID=ALT2242p_00116_gene;locus_tag=ALT2242p_00116
+Alteromonas2242plasmid	Prodigal:2.6	CDS	109959	110405	.	+	0	ID=ALT2242p_00116;Parent=ALT2242p_00116_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00116;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	110666	110935	.	-	.	ID=ALT2242p_00117_gene;Name=cheB;gene=cheB;locus_tag=ALT2242p_00117
+Alteromonas2242plasmid	Prodigal:2.6	CDS	110666	110935	.	-	0	ID=ALT2242p_00117;Parent=ALT2242p_00117_gene;eC_number=3.1.1.61;Name=cheB;gene=cheB;inference=ab initio prediction:Prodigal:2.6,protein motif:HAMAP:MF_00099;locus_tag=ALT2242p_00117;product=Chemotaxis response regulator protein-glutamate methylesterase
+Alteromonas2242plasmid	prokka	gene	111080	111514	.	-	.	ID=ALT2242p_00118_gene;locus_tag=ALT2242p_00118
+Alteromonas2242plasmid	Prodigal:2.6	CDS	111080	111514	.	-	0	ID=ALT2242p_00118;Parent=ALT2242p_00118_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00118;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	111578	111835	.	+	.	ID=ALT2242p_00119_gene;locus_tag=ALT2242p_00119
+Alteromonas2242plasmid	Prodigal:2.6	CDS	111578	111835	.	+	0	ID=ALT2242p_00119;Parent=ALT2242p_00119_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00119;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	112001	112513	.	+	.	ID=ALT2242p_00120_gene;locus_tag=ALT2242p_00120
+Alteromonas2242plasmid	Prodigal:2.6	CDS	112001	112513	.	+	0	ID=ALT2242p_00120;Parent=ALT2242p_00120_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00120;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	112547	113272	.	-	.	ID=ALT2242p_00121_gene;locus_tag=ALT2242p_00121
+Alteromonas2242plasmid	Prodigal:2.6	CDS	112547	113272	.	-	0	ID=ALT2242p_00121;Parent=ALT2242p_00121_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00121;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	113291	113497	.	-	.	ID=ALT2242p_00122_gene;locus_tag=ALT2242p_00122
+Alteromonas2242plasmid	Prodigal:2.6	CDS	113291	113497	.	-	0	ID=ALT2242p_00122;Parent=ALT2242p_00122_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00122;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	114289	114798	.	-	.	ID=ALT2242p_00123_gene;Name=xerC_2;gene=xerC_2;locus_tag=ALT2242p_00123
+Alteromonas2242plasmid	Prodigal:2.6	CDS	114289	114798	.	-	0	ID=ALT2242p_00123;Parent=ALT2242p_00123_gene;Name=xerC_2;gene=xerC_2;inference=ab initio prediction:Prodigal:2.6,protein motif:HAMAP:MF_01808;locus_tag=ALT2242p_00123;product=Tyrosine recombinase XerC
+Alteromonas2242plasmid	prokka	gene	115280	115663	.	+	.	ID=ALT2242p_00124_gene;locus_tag=ALT2242p_00124
+Alteromonas2242plasmid	Prodigal:2.6	CDS	115280	115663	.	+	0	ID=ALT2242p_00124;Parent=ALT2242p_00124_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00124;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	115795	116073	.	+	.	ID=ALT2242p_00125_gene;locus_tag=ALT2242p_00125
+Alteromonas2242plasmid	Prodigal:2.6	CDS	115795	116073	.	+	0	ID=ALT2242p_00125;Parent=ALT2242p_00125_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00125;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	116248	116826	.	+	.	ID=ALT2242p_00126_gene;locus_tag=ALT2242p_00126
+Alteromonas2242plasmid	Prodigal:2.6	CDS	116248	116826	.	+	0	ID=ALT2242p_00126;Parent=ALT2242p_00126_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00126;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	117372	117734	.	+	.	ID=ALT2242p_00127_gene;locus_tag=ALT2242p_00127
+Alteromonas2242plasmid	Prodigal:2.6	CDS	117372	117734	.	+	0	ID=ALT2242p_00127;Parent=ALT2242p_00127_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00127;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	117880	118308	.	+	.	ID=ALT2242p_00128_gene;locus_tag=ALT2242p_00128
+Alteromonas2242plasmid	Prodigal:2.6	CDS	117880	118308	.	+	0	ID=ALT2242p_00128;Parent=ALT2242p_00128_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00128;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	118424	118777	.	+	.	ID=ALT2242p_00129_gene;locus_tag=ALT2242p_00129
+Alteromonas2242plasmid	Prodigal:2.6	CDS	118424	118777	.	+	0	ID=ALT2242p_00129;Parent=ALT2242p_00129_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00129;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	119243	120289	.	-	.	ID=ALT2242p_00130_gene;locus_tag=ALT2242p_00130
+Alteromonas2242plasmid	Prodigal:2.6	CDS	119243	120289	.	-	0	ID=ALT2242p_00130;Parent=ALT2242p_00130_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00130;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	120489	120845	.	+	.	ID=ALT2242p_00131_gene;locus_tag=ALT2242p_00131
+Alteromonas2242plasmid	Prodigal:2.6	CDS	120489	120845	.	+	0	ID=ALT2242p_00131;Parent=ALT2242p_00131_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00131;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	121395	121769	.	-	.	ID=ALT2242p_00132_gene;locus_tag=ALT2242p_00132
+Alteromonas2242plasmid	Prodigal:2.6	CDS	121395	121769	.	-	0	ID=ALT2242p_00132;Parent=ALT2242p_00132_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00132;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	121778	122416	.	-	.	ID=ALT2242p_00133_gene;locus_tag=ALT2242p_00133
+Alteromonas2242plasmid	Prodigal:2.6	CDS	121778	122416	.	-	0	ID=ALT2242p_00133;Parent=ALT2242p_00133_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00133;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	123448	128103	.	+	.	ID=ALT2242p_00134_gene;Name=wapA_1;gene=wapA_1;locus_tag=ALT2242p_00134
+Alteromonas2242plasmid	Prodigal:2.6	CDS	123448	128103	.	+	0	ID=ALT2242p_00134;Parent=ALT2242p_00134_gene;eC_number=3.1.-.-;Name=wapA_1;gene=wapA_1;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:Q07833;locus_tag=ALT2242p_00134;product=tRNA nuclease WapA
+Alteromonas2242plasmid	prokka	gene	128100	128612	.	+	.	ID=ALT2242p_00135_gene;locus_tag=ALT2242p_00135
+Alteromonas2242plasmid	Prodigal:2.6	CDS	128100	128612	.	+	0	ID=ALT2242p_00135;Parent=ALT2242p_00135_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00135;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	128597	128728	.	-	.	ID=ALT2242p_00136_gene;locus_tag=ALT2242p_00136
+Alteromonas2242plasmid	Prodigal:2.6	CDS	128597	128728	.	-	0	ID=ALT2242p_00136;Parent=ALT2242p_00136_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00136;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	129138	129269	.	+	.	ID=ALT2242p_00137_gene;locus_tag=ALT2242p_00137
+Alteromonas2242plasmid	Prodigal:2.6	CDS	129138	129269	.	+	0	ID=ALT2242p_00137;Parent=ALT2242p_00137_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00137;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	129812	130051	.	+	.	ID=ALT2242p_00138_gene;locus_tag=ALT2242p_00138
+Alteromonas2242plasmid	Prodigal:2.6	CDS	129812	130051	.	+	0	ID=ALT2242p_00138;Parent=ALT2242p_00138_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00138;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	130551	130688	.	+	.	ID=ALT2242p_00139_gene;locus_tag=ALT2242p_00139
+Alteromonas2242plasmid	Prodigal:2.6	CDS	130551	130688	.	+	0	ID=ALT2242p_00139;Parent=ALT2242p_00139_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00139;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	130654	130896	.	+	.	ID=ALT2242p_00140_gene;Name=xerD;gene=xerD;locus_tag=ALT2242p_00140
+Alteromonas2242plasmid	Prodigal:2.6	CDS	130654	130896	.	+	0	ID=ALT2242p_00140;Parent=ALT2242p_00140_gene;Name=xerD;gene=xerD;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P0A0P0;locus_tag=ALT2242p_00140;product=Tyrosine recombinase XerD
+Alteromonas2242plasmid	prokka	gene	131104	131772	.	+	.	ID=ALT2242p_00141_gene;locus_tag=ALT2242p_00141
+Alteromonas2242plasmid	Prodigal:2.6	CDS	131104	131772	.	+	0	ID=ALT2242p_00141;Parent=ALT2242p_00141_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00141;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	131772	132107	.	+	.	ID=ALT2242p_00142_gene;locus_tag=ALT2242p_00142
+Alteromonas2242plasmid	Prodigal:2.6	CDS	131772	132107	.	+	0	ID=ALT2242p_00142;Parent=ALT2242p_00142_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00142;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	132287	132982	.	+	.	ID=ALT2242p_00143_gene;locus_tag=ALT2242p_00143
+Alteromonas2242plasmid	Prodigal:2.6	CDS	132287	132982	.	+	0	ID=ALT2242p_00143;Parent=ALT2242p_00143_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00143;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	132983	133360	.	+	.	ID=ALT2242p_00144_gene;locus_tag=ALT2242p_00144
+Alteromonas2242plasmid	Prodigal:2.6	CDS	132983	133360	.	+	0	ID=ALT2242p_00144;Parent=ALT2242p_00144_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00144;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	133545	133706	.	-	.	ID=ALT2242p_00145_gene;locus_tag=ALT2242p_00145
+Alteromonas2242plasmid	Prodigal:2.6	CDS	133545	133706	.	-	0	ID=ALT2242p_00145;Parent=ALT2242p_00145_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00145;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	134450	137428	.	-	.	ID=ALT2242p_00146_gene;locus_tag=ALT2242p_00146
+Alteromonas2242plasmid	Prodigal:2.6	CDS	134450	137428	.	-	0	ID=ALT2242p_00146;Parent=ALT2242p_00146_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00146;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	137532	142196	.	-	.	ID=ALT2242p_00147_gene;Name=wapA_2;gene=wapA_2;locus_tag=ALT2242p_00147
+Alteromonas2242plasmid	Prodigal:2.6	CDS	137532	142196	.	-	0	ID=ALT2242p_00147;Parent=ALT2242p_00147_gene;eC_number=3.1.-.-;Name=wapA_2;gene=wapA_2;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:G4NYJ6;locus_tag=ALT2242p_00147;product=tRNA3(Ser)-specific nuclease WapA
+Alteromonas2242plasmid	prokka	gene	143090	143482	.	-	.	ID=ALT2242p_00148_gene;locus_tag=ALT2242p_00148
+Alteromonas2242plasmid	Prodigal:2.6	CDS	143090	143482	.	-	0	ID=ALT2242p_00148;Parent=ALT2242p_00148_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00148;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	143634	144023	.	-	.	ID=ALT2242p_00149_gene;locus_tag=ALT2242p_00149
+Alteromonas2242plasmid	Prodigal:2.6	CDS	143634	144023	.	-	0	ID=ALT2242p_00149;Parent=ALT2242p_00149_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00149;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	144170	144391	.	-	.	ID=ALT2242p_00150_gene;locus_tag=ALT2242p_00150
+Alteromonas2242plasmid	Prodigal:2.6	CDS	144170	144391	.	-	0	ID=ALT2242p_00150;Parent=ALT2242p_00150_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00150;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	144384	144521	.	-	.	ID=ALT2242p_00151_gene;locus_tag=ALT2242p_00151
+Alteromonas2242plasmid	Prodigal:2.6	CDS	144384	144521	.	-	0	ID=ALT2242p_00151;Parent=ALT2242p_00151_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00151;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	144569	144811	.	-	.	ID=ALT2242p_00152_gene;locus_tag=ALT2242p_00152
+Alteromonas2242plasmid	Prodigal:2.6	CDS	144569	144811	.	-	0	ID=ALT2242p_00152;Parent=ALT2242p_00152_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00152;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	144760	144912	.	-	.	ID=ALT2242p_00153_gene;locus_tag=ALT2242p_00153
+Alteromonas2242plasmid	Prodigal:2.6	CDS	144760	144912	.	-	0	ID=ALT2242p_00153;Parent=ALT2242p_00153_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00153;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	144909	145205	.	-	.	ID=ALT2242p_00154_gene;locus_tag=ALT2242p_00154
+Alteromonas2242plasmid	Prodigal:2.6	CDS	144909	145205	.	-	0	ID=ALT2242p_00154;Parent=ALT2242p_00154_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00154;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	145266	145502	.	-	.	ID=ALT2242p_00155_gene;locus_tag=ALT2242p_00155
+Alteromonas2242plasmid	Prodigal:2.6	CDS	145266	145502	.	-	0	ID=ALT2242p_00155;Parent=ALT2242p_00155_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00155;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	145532	145921	.	-	.	ID=ALT2242p_00156_gene;locus_tag=ALT2242p_00156
+Alteromonas2242plasmid	Prodigal:2.6	CDS	145532	145921	.	-	0	ID=ALT2242p_00156;Parent=ALT2242p_00156_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00156;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	146166	146432	.	-	.	ID=ALT2242p_00157_gene;locus_tag=ALT2242p_00157
+Alteromonas2242plasmid	Prodigal:2.6	CDS	146166	146432	.	-	0	ID=ALT2242p_00157;Parent=ALT2242p_00157_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00157;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	146893	147147	.	-	.	ID=ALT2242p_00158_gene;locus_tag=ALT2242p_00158
+Alteromonas2242plasmid	Prodigal:2.6	CDS	146893	147147	.	-	0	ID=ALT2242p_00158;Parent=ALT2242p_00158_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00158;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	147505	147780	.	+	.	ID=ALT2242p_00159_gene;locus_tag=ALT2242p_00159
+Alteromonas2242plasmid	Prodigal:2.6	CDS	147505	147780	.	+	0	ID=ALT2242p_00159;Parent=ALT2242p_00159_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00159;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	147887	148429	.	+	.	ID=ALT2242p_00160_gene;locus_tag=ALT2242p_00160
+Alteromonas2242plasmid	Prodigal:2.6	CDS	147887	148429	.	+	0	ID=ALT2242p_00160;Parent=ALT2242p_00160_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00160;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	148467	148841	.	+	.	ID=ALT2242p_00161_gene;locus_tag=ALT2242p_00161
+Alteromonas2242plasmid	Prodigal:2.6	CDS	148467	148841	.	+	0	ID=ALT2242p_00161;Parent=ALT2242p_00161_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00161;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	149737	150438	.	-	.	ID=ALT2242p_00162_gene;locus_tag=ALT2242p_00162
+Alteromonas2242plasmid	Prodigal:2.6	CDS	149737	150438	.	-	0	ID=ALT2242p_00162;Parent=ALT2242p_00162_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00162;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	150885	152324	.	+	.	ID=ALT2242p_00163_gene;Name=aldA;gene=aldA;locus_tag=ALT2242p_00163
+Alteromonas2242plasmid	Prodigal:2.6	CDS	150885	152324	.	+	0	ID=ALT2242p_00163;Parent=ALT2242p_00163_gene;eC_number=1.2.1.22;Name=aldA;gene=aldA;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P25553;locus_tag=ALT2242p_00163;product=Lactaldehyde dehydrogenase
+Alteromonas2242plasmid	prokka	gene	152563	152940	.	+	.	ID=ALT2242p_00164_gene;locus_tag=ALT2242p_00164
+Alteromonas2242plasmid	Prodigal:2.6	CDS	152563	152940	.	+	0	ID=ALT2242p_00164;Parent=ALT2242p_00164_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00164;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	153008	154213	.	-	.	ID=ALT2242p_00165_gene;locus_tag=ALT2242p_00165
+Alteromonas2242plasmid	Prodigal:2.6	CDS	153008	154213	.	-	0	ID=ALT2242p_00165;Parent=ALT2242p_00165_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00165;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	154487	156481	.	-	.	ID=ALT2242p_00166_gene;Name=acoR;gene=acoR;locus_tag=ALT2242p_00166
+Alteromonas2242plasmid	Prodigal:2.6	CDS	154487	156481	.	-	0	ID=ALT2242p_00166;Parent=ALT2242p_00166_gene;Name=acoR;gene=acoR;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P28614;locus_tag=ALT2242p_00166;product=Acetoin catabolism regulatory protein
+Alteromonas2242plasmid	prokka	gene	157018	158814	.	+	.	ID=ALT2242p_00167_gene;Name=qbdA;gene=qbdA;locus_tag=ALT2242p_00167
+Alteromonas2242plasmid	Prodigal:2.6	CDS	157018	158814	.	+	0	ID=ALT2242p_00167;Parent=ALT2242p_00167_gene;eC_number=1.1.9.1;Name=qbdA;gene=qbdA;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:Q8GR64;locus_tag=ALT2242p_00167;product=Quinohemoprotein alcohol dehydrogenase ADH IIB
+Alteromonas2242plasmid	prokka	gene	158908	159549	.	+	.	ID=ALT2242p_00168_gene;Name=aioB;gene=aioB;locus_tag=ALT2242p_00168
+Alteromonas2242plasmid	Prodigal:2.6	CDS	158908	159549	.	+	0	ID=ALT2242p_00168;Parent=ALT2242p_00168_gene;eC_number=1.20.9.1;Name=aioB;gene=aioB;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:Q8GGJ7;locus_tag=ALT2242p_00168;product=Arsenite oxidase subunit AioB
+Alteromonas2242plasmid	prokka	gene	159562	160023	.	+	.	ID=ALT2242p_00169_gene;locus_tag=ALT2242p_00169
+Alteromonas2242plasmid	Prodigal:2.6	CDS	159562	160023	.	+	0	ID=ALT2242p_00169;Parent=ALT2242p_00169_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00169;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	160043	163363	.	+	.	ID=ALT2242p_00170_gene;Name=ccpA;gene=ccpA;locus_tag=ALT2242p_00170
+Alteromonas2242plasmid	Prodigal:2.6	CDS	160043	163363	.	+	0	ID=ALT2242p_00170;Parent=ALT2242p_00170_gene;eC_number=1.11.1.5;Name=ccpA;gene=ccpA;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P14532;locus_tag=ALT2242p_00170;product=Cytochrome c551 peroxidase
+Alteromonas2242plasmid	prokka	gene	163386	164534	.	+	.	ID=ALT2242p_00171_gene;Name=lldD;gene=lldD;locus_tag=ALT2242p_00171
+Alteromonas2242plasmid	Prodigal:2.6	CDS	163386	164534	.	+	0	ID=ALT2242p_00171;Parent=ALT2242p_00171_gene;eC_number=1.1.-.-;Name=lldD;gene=lldD;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P33232;locus_tag=ALT2242p_00171;product=L-lactate dehydrogenase
+Alteromonas2242plasmid	prokka	gene	164638	166704	.	+	.	ID=ALT2242p_00172_gene;Name=fecA;gene=fecA;locus_tag=ALT2242p_00172
+Alteromonas2242plasmid	Prodigal:2.6	CDS	164638	166704	.	+	0	ID=ALT2242p_00172;Parent=ALT2242p_00172_gene;Name=fecA;gene=fecA;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P13036;locus_tag=ALT2242p_00172;product=Fe(3+) dicitrate transport protein FecA
+Alteromonas2242plasmid	prokka	gene	166729	166827	.	-	.	ID=ALT2242p_00173_gene;locus_tag=ALT2242p_00173
+Alteromonas2242plasmid	Prodigal:2.6	CDS	166729	166827	.	-	0	ID=ALT2242p_00173;Parent=ALT2242p_00173_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00173;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	167033	167461	.	-	.	ID=ALT2242p_00174_gene;locus_tag=ALT2242p_00174
+Alteromonas2242plasmid	Prodigal:2.6	CDS	167033	167461	.	-	0	ID=ALT2242p_00174;Parent=ALT2242p_00174_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00174;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	167606	168523	.	-	.	ID=ALT2242p_00175_gene;locus_tag=ALT2242p_00175
+Alteromonas2242plasmid	Prodigal:2.6	CDS	167606	168523	.	-	0	ID=ALT2242p_00175;Parent=ALT2242p_00175_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00175;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	168587	169720	.	-	.	ID=ALT2242p_00176_gene;locus_tag=ALT2242p_00176
+Alteromonas2242plasmid	Prodigal:2.6	CDS	168587	169720	.	-	0	ID=ALT2242p_00176;Parent=ALT2242p_00176_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00176;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	170692	173463	.	-	.	ID=ALT2242p_00177_gene;locus_tag=ALT2242p_00177
+Alteromonas2242plasmid	Prodigal:2.6	CDS	170692	173463	.	-	0	ID=ALT2242p_00177;Parent=ALT2242p_00177_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00177;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	173580	174146	.	-	.	ID=ALT2242p_00178_gene;locus_tag=ALT2242p_00178
+Alteromonas2242plasmid	Prodigal:2.6	CDS	173580	174146	.	-	0	ID=ALT2242p_00178;Parent=ALT2242p_00178_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00178;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	174143	174538	.	-	.	ID=ALT2242p_00179_gene;locus_tag=ALT2242p_00179
+Alteromonas2242plasmid	Prodigal:2.6	CDS	174143	174538	.	-	0	ID=ALT2242p_00179;Parent=ALT2242p_00179_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00179;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	174562	174996	.	-	.	ID=ALT2242p_00180_gene;Name=zntR;gene=zntR;locus_tag=ALT2242p_00180
+Alteromonas2242plasmid	Prodigal:2.6	CDS	174562	174996	.	-	0	ID=ALT2242p_00180;Parent=ALT2242p_00180_gene;Name=zntR;gene=zntR;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P0ACS5;locus_tag=ALT2242p_00180;product=HTH-type transcriptional regulator ZntR
+Alteromonas2242plasmid	prokka	gene	175016	175816	.	-	.	ID=ALT2242p_00181_gene;Name=cph2_1;gene=cph2_1;locus_tag=ALT2242p_00181
+Alteromonas2242plasmid	Prodigal:2.6	CDS	175016	175816	.	-	0	ID=ALT2242p_00181;Parent=ALT2242p_00181_gene;Name=cph2_1;gene=cph2_1;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:Q55434;locus_tag=ALT2242p_00181;product=Phytochrome-like protein cph2
+Alteromonas2242plasmid	prokka	gene	175828	177495	.	-	.	ID=ALT2242p_00182_gene;Name=merA;gene=merA;locus_tag=ALT2242p_00182
+Alteromonas2242plasmid	Prodigal:2.6	CDS	175828	177495	.	-	0	ID=ALT2242p_00182;Parent=ALT2242p_00182_gene;eC_number=1.16.1.1;Name=merA;gene=merA;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P17239;locus_tag=ALT2242p_00182;product=Mercuric reductase
+Alteromonas2242plasmid	prokka	gene	177533	177952	.	-	.	ID=ALT2242p_00183_gene;Name=merC;gene=merC;locus_tag=ALT2242p_00183
+Alteromonas2242plasmid	Prodigal:2.6	CDS	177533	177952	.	-	0	ID=ALT2242p_00183;Parent=ALT2242p_00183_gene;Name=merC;gene=merC;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P22905;locus_tag=ALT2242p_00183;product=Mercuric resistance protein MerC
+Alteromonas2242plasmid	prokka	gene	177956	178231	.	-	.	ID=ALT2242p_00184_gene;Name=merP;gene=merP;locus_tag=ALT2242p_00184
+Alteromonas2242plasmid	Prodigal:2.6	CDS	177956	178231	.	-	0	ID=ALT2242p_00184;Parent=ALT2242p_00184_gene;Name=merP;gene=merP;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P13113;locus_tag=ALT2242p_00184;product=Mercuric transport protein periplasmic component
+Alteromonas2242plasmid	prokka	gene	178287	178634	.	-	.	ID=ALT2242p_00185_gene;locus_tag=ALT2242p_00185
+Alteromonas2242plasmid	Prodigal:2.6	CDS	178287	178634	.	-	0	ID=ALT2242p_00185;Parent=ALT2242p_00185_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00185;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	178728	180062	.	-	.	ID=ALT2242p_00186_gene;Name=merR;gene=merR;locus_tag=ALT2242p_00186
+Alteromonas2242plasmid	Prodigal:2.6	CDS	178728	180062	.	-	0	ID=ALT2242p_00186;Parent=ALT2242p_00186_gene;Name=merR;gene=merR;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P0A183;locus_tag=ALT2242p_00186;product=Mercuric resistance operon regulatory protein
+Alteromonas2242plasmid	prokka	gene	180267	181316	.	+	.	ID=ALT2242p_00187_gene;Name=smc_1;gene=smc_1;locus_tag=ALT2242p_00187
+Alteromonas2242plasmid	Prodigal:2.6	CDS	180267	181316	.	+	0	ID=ALT2242p_00187;Parent=ALT2242p_00187_gene;Name=smc_1;gene=smc_1;inference=ab initio prediction:Prodigal:2.6,protein motif:HAMAP:MF_01894;locus_tag=ALT2242p_00187;product=Chromosome partition protein Smc
+Alteromonas2242plasmid	prokka	gene	181301	182437	.	-	.	ID=ALT2242p_00188_gene;Name=smc_2;gene=smc_2;locus_tag=ALT2242p_00188
+Alteromonas2242plasmid	Prodigal:2.6	CDS	181301	182437	.	-	0	ID=ALT2242p_00188;Parent=ALT2242p_00188_gene;Name=smc_2;gene=smc_2;inference=ab initio prediction:Prodigal:2.6,protein motif:HAMAP:MF_01894;locus_tag=ALT2242p_00188;product=Chromosome partition protein Smc
+Alteromonas2242plasmid	prokka	gene	182645	183652	.	+	.	ID=ALT2242p_00189_gene;Name=xerC_3;gene=xerC_3;locus_tag=ALT2242p_00189
+Alteromonas2242plasmid	Prodigal:2.6	CDS	182645	183652	.	+	0	ID=ALT2242p_00189;Parent=ALT2242p_00189_gene;Name=xerC_3;gene=xerC_3;inference=ab initio prediction:Prodigal:2.6,protein motif:HAMAP:MF_01808;locus_tag=ALT2242p_00189;product=Tyrosine recombinase XerC
+Alteromonas2242plasmid	prokka	gene	183682	184590	.	-	.	ID=ALT2242p_00190_gene;locus_tag=ALT2242p_00190
+Alteromonas2242plasmid	Prodigal:2.6	CDS	183682	184590	.	-	0	ID=ALT2242p_00190;Parent=ALT2242p_00190_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00190;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	184643	186100	.	-	.	ID=ALT2242p_00191_gene;Name=srpC;gene=srpC;locus_tag=ALT2242p_00191
+Alteromonas2242plasmid	Prodigal:2.6	CDS	184643	186100	.	-	0	ID=ALT2242p_00191;Parent=ALT2242p_00191_gene;Name=srpC;gene=srpC;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:Q55027;locus_tag=ALT2242p_00191;product=putative chromate transport protein
+Alteromonas2242plasmid	prokka	gene	186103	187032	.	-	.	ID=ALT2242p_00192_gene;locus_tag=ALT2242p_00192
+Alteromonas2242plasmid	Prodigal:2.6	CDS	186103	187032	.	-	0	ID=ALT2242p_00192;Parent=ALT2242p_00192_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00192;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	187202	190135	.	+	.	ID=ALT2242p_00193_gene;locus_tag=ALT2242p_00193
+Alteromonas2242plasmid	Prodigal:2.6	CDS	187202	190135	.	+	0	ID=ALT2242p_00193;Parent=ALT2242p_00193_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00193;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	190258	190638	.	-	.	ID=ALT2242p_00194_gene;locus_tag=ALT2242p_00194
+Alteromonas2242plasmid	Prodigal:2.6	CDS	190258	190638	.	-	0	ID=ALT2242p_00194;Parent=ALT2242p_00194_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00194;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	190697	190972	.	-	.	ID=ALT2242p_00195_gene;locus_tag=ALT2242p_00195
+Alteromonas2242plasmid	Prodigal:2.6	CDS	190697	190972	.	-	0	ID=ALT2242p_00195;Parent=ALT2242p_00195_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00195;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	190982	191194	.	-	.	ID=ALT2242p_00196_gene;locus_tag=ALT2242p_00196
+Alteromonas2242plasmid	Prodigal:2.6	CDS	190982	191194	.	-	0	ID=ALT2242p_00196;Parent=ALT2242p_00196_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00196;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	191206	191511	.	-	.	ID=ALT2242p_00197_gene;locus_tag=ALT2242p_00197
+Alteromonas2242plasmid	Prodigal:2.6	CDS	191206	191511	.	-	0	ID=ALT2242p_00197;Parent=ALT2242p_00197_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00197;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	191520	192023	.	-	.	ID=ALT2242p_00198_gene;locus_tag=ALT2242p_00198
+Alteromonas2242plasmid	Prodigal:2.6	CDS	191520	192023	.	-	0	ID=ALT2242p_00198;Parent=ALT2242p_00198_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00198;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	192182	192358	.	-	.	ID=ALT2242p_00199_gene;locus_tag=ALT2242p_00199
+Alteromonas2242plasmid	Prodigal:2.6	CDS	192182	192358	.	-	0	ID=ALT2242p_00199;Parent=ALT2242p_00199_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00199;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	192681	193301	.	+	.	ID=ALT2242p_00200_gene;locus_tag=ALT2242p_00200
+Alteromonas2242plasmid	Prodigal:2.6	CDS	192681	193301	.	+	0	ID=ALT2242p_00200;Parent=ALT2242p_00200_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00200;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	193434	194033	.	-	.	ID=ALT2242p_00201_gene;locus_tag=ALT2242p_00201
+Alteromonas2242plasmid	Prodigal:2.6	CDS	193434	194033	.	-	0	ID=ALT2242p_00201;Parent=ALT2242p_00201_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00201;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	194033	195253	.	-	.	ID=ALT2242p_00202_gene;locus_tag=ALT2242p_00202
+Alteromonas2242plasmid	Prodigal:2.6	CDS	194033	195253	.	-	0	ID=ALT2242p_00202;Parent=ALT2242p_00202_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00202;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	195262	195564	.	-	.	ID=ALT2242p_00203_gene;locus_tag=ALT2242p_00203
+Alteromonas2242plasmid	Prodigal:2.6	CDS	195262	195564	.	-	0	ID=ALT2242p_00203;Parent=ALT2242p_00203_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00203;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	195567	196091	.	-	.	ID=ALT2242p_00204_gene;locus_tag=ALT2242p_00204
+Alteromonas2242plasmid	Prodigal:2.6	CDS	195567	196091	.	-	0	ID=ALT2242p_00204;Parent=ALT2242p_00204_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00204;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	196199	196648	.	+	.	ID=ALT2242p_00205_gene;locus_tag=ALT2242p_00205
+Alteromonas2242plasmid	Prodigal:2.6	CDS	196199	196648	.	+	0	ID=ALT2242p_00205;Parent=ALT2242p_00205_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00205;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	196677	197321	.	-	.	ID=ALT2242p_00206_gene;locus_tag=ALT2242p_00206
+Alteromonas2242plasmid	Prodigal:2.6	CDS	196677	197321	.	-	0	ID=ALT2242p_00206;Parent=ALT2242p_00206_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00206;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	197473	197766	.	-	.	ID=ALT2242p_00207_gene;locus_tag=ALT2242p_00207
+Alteromonas2242plasmid	Prodigal:2.6	CDS	197473	197766	.	-	0	ID=ALT2242p_00207;Parent=ALT2242p_00207_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00207;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	197756	198292	.	-	.	ID=ALT2242p_00208_gene;locus_tag=ALT2242p_00208
+Alteromonas2242plasmid	Prodigal:2.6	CDS	197756	198292	.	-	0	ID=ALT2242p_00208;Parent=ALT2242p_00208_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00208;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	198379	200463	.	+	.	ID=ALT2242p_00209_gene;Name=yjcD;gene=yjcD;locus_tag=ALT2242p_00209
+Alteromonas2242plasmid	Prodigal:2.6	CDS	198379	200463	.	+	0	ID=ALT2242p_00209;Parent=ALT2242p_00209_gene;eC_number=3.6.4.12;Name=yjcD;gene=yjcD;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:O31626;locus_tag=ALT2242p_00209;product=Putative ATP-dependent DNA helicase YjcD
+Alteromonas2242plasmid	prokka	gene	200463	200792	.	+	.	ID=ALT2242p_00210_gene;locus_tag=ALT2242p_00210
+Alteromonas2242plasmid	Prodigal:2.6	CDS	200463	200792	.	+	0	ID=ALT2242p_00210;Parent=ALT2242p_00210_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00210;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	200794	201585	.	+	.	ID=ALT2242p_00211_gene;locus_tag=ALT2242p_00211
+Alteromonas2242plasmid	Prodigal:2.6	CDS	200794	201585	.	+	0	ID=ALT2242p_00211;Parent=ALT2242p_00211_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00211;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	201644	202894	.	-	.	ID=ALT2242p_00212_gene;locus_tag=ALT2242p_00212
+Alteromonas2242plasmid	Prodigal:2.6	CDS	201644	202894	.	-	0	ID=ALT2242p_00212;Parent=ALT2242p_00212_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00212;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	202988	203185	.	-	.	ID=ALT2242p_00213_gene;locus_tag=ALT2242p_00213
+Alteromonas2242plasmid	Prodigal:2.6	CDS	202988	203185	.	-	0	ID=ALT2242p_00213;Parent=ALT2242p_00213_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00213;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	203282	207373	.	-	.	ID=ALT2242p_00214_gene;locus_tag=ALT2242p_00214
+Alteromonas2242plasmid	Prodigal:2.6	CDS	203282	207373	.	-	0	ID=ALT2242p_00214;Parent=ALT2242p_00214_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00214;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	207409	207897	.	-	.	ID=ALT2242p_00215_gene;locus_tag=ALT2242p_00215
+Alteromonas2242plasmid	Prodigal:2.6	CDS	207409	207897	.	-	0	ID=ALT2242p_00215;Parent=ALT2242p_00215_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00215;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	207899	208345	.	-	.	ID=ALT2242p_00216_gene;locus_tag=ALT2242p_00216
+Alteromonas2242plasmid	Prodigal:2.6	CDS	207899	208345	.	-	0	ID=ALT2242p_00216;Parent=ALT2242p_00216_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00216;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	208363	209532	.	-	.	ID=ALT2242p_00217_gene;locus_tag=ALT2242p_00217
+Alteromonas2242plasmid	Prodigal:2.6	CDS	208363	209532	.	-	0	ID=ALT2242p_00217;Parent=ALT2242p_00217_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00217;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	209529	211112	.	-	.	ID=ALT2242p_00218_gene;Name=gspE;gene=gspE;locus_tag=ALT2242p_00218
+Alteromonas2242plasmid	Prodigal:2.6	CDS	209529	211112	.	-	0	ID=ALT2242p_00218;Parent=ALT2242p_00218_gene;Name=gspE;gene=gspE;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P45759;locus_tag=ALT2242p_00218;product=Putative type II secretion system protein E
+Alteromonas2242plasmid	prokka	gene	211122	211844	.	-	.	ID=ALT2242p_00219_gene;locus_tag=ALT2242p_00219
+Alteromonas2242plasmid	Prodigal:2.6	CDS	211122	211844	.	-	0	ID=ALT2242p_00219;Parent=ALT2242p_00219_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00219;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	211837	213105	.	-	.	ID=ALT2242p_00220_gene;locus_tag=ALT2242p_00220
+Alteromonas2242plasmid	Prodigal:2.6	CDS	211837	213105	.	-	0	ID=ALT2242p_00220;Parent=ALT2242p_00220_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00220;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	213102	214709	.	-	.	ID=ALT2242p_00221_gene;locus_tag=ALT2242p_00221
+Alteromonas2242plasmid	Prodigal:2.6	CDS	213102	214709	.	-	0	ID=ALT2242p_00221;Parent=ALT2242p_00221_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00221;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	214709	215347	.	-	.	ID=ALT2242p_00222_gene;locus_tag=ALT2242p_00222
+Alteromonas2242plasmid	Prodigal:2.6	CDS	214709	215347	.	-	0	ID=ALT2242p_00222;Parent=ALT2242p_00222_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00222;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	215467	216396	.	-	.	ID=ALT2242p_00223_gene;Name=rdgC;gene=rdgC;locus_tag=ALT2242p_00223
+Alteromonas2242plasmid	Prodigal:2.6	CDS	215467	216396	.	-	0	ID=ALT2242p_00223;Parent=ALT2242p_00223_gene;Name=rdgC;gene=rdgC;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P44628;locus_tag=ALT2242p_00223;product=Recombination-associated protein RdgC
+Alteromonas2242plasmid	prokka	gene	216397	216879	.	-	.	ID=ALT2242p_00224_gene;locus_tag=ALT2242p_00224
+Alteromonas2242plasmid	Prodigal:2.6	CDS	216397	216879	.	-	0	ID=ALT2242p_00224;Parent=ALT2242p_00224_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00224;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	216848	217633	.	-	.	ID=ALT2242p_00225_gene;Name=cph2_2;gene=cph2_2;locus_tag=ALT2242p_00225
+Alteromonas2242plasmid	Prodigal:2.6	CDS	216848	217633	.	-	0	ID=ALT2242p_00225;Parent=ALT2242p_00225_gene;Name=cph2_2;gene=cph2_2;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:Q55434;locus_tag=ALT2242p_00225;product=Phytochrome-like protein cph2
+Alteromonas2242plasmid	prokka	gene	217638	218366	.	-	.	ID=ALT2242p_00226_gene;locus_tag=ALT2242p_00226
+Alteromonas2242plasmid	Prodigal:2.6	CDS	217638	218366	.	-	0	ID=ALT2242p_00226;Parent=ALT2242p_00226_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00226;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	218366	218827	.	-	.	ID=ALT2242p_00227_gene;locus_tag=ALT2242p_00227
+Alteromonas2242plasmid	Prodigal:2.6	CDS	218366	218827	.	-	0	ID=ALT2242p_00227;Parent=ALT2242p_00227_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00227;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	218840	220030	.	-	.	ID=ALT2242p_00228_gene;Name=vdcA;gene=vdcA;locus_tag=ALT2242p_00228
+Alteromonas2242plasmid	Prodigal:2.6	CDS	218840	220030	.	-	0	ID=ALT2242p_00228;Parent=ALT2242p_00228_gene;eC_number=2.7.7.65;Name=vdcA;gene=vdcA;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:Q9KKZ4;locus_tag=ALT2242p_00228;product=Diguanylate cyclase VdcA
+Alteromonas2242plasmid	prokka	gene	220179	220781	.	+	.	ID=ALT2242p_00229_gene;locus_tag=ALT2242p_00229
+Alteromonas2242plasmid	Prodigal:2.6	CDS	220179	220781	.	+	0	ID=ALT2242p_00229;Parent=ALT2242p_00229_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00229;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	220784	221206	.	+	.	ID=ALT2242p_00230_gene;locus_tag=ALT2242p_00230
+Alteromonas2242plasmid	Prodigal:2.6	CDS	220784	221206	.	+	0	ID=ALT2242p_00230;Parent=ALT2242p_00230_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00230;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	221217	222503	.	+	.	ID=ALT2242p_00231_gene;locus_tag=ALT2242p_00231
+Alteromonas2242plasmid	Prodigal:2.6	CDS	221217	222503	.	+	0	ID=ALT2242p_00231;Parent=ALT2242p_00231_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00231;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	222582	224387	.	+	.	ID=ALT2242p_00232_gene;locus_tag=ALT2242p_00232
+Alteromonas2242plasmid	Prodigal:2.6	CDS	222582	224387	.	+	0	ID=ALT2242p_00232;Parent=ALT2242p_00232_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00232;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	224463	225632	.	-	.	ID=ALT2242p_00233_gene;locus_tag=ALT2242p_00233
+Alteromonas2242plasmid	Prodigal:2.6	CDS	224463	225632	.	-	0	ID=ALT2242p_00233;Parent=ALT2242p_00233_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00233;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	225644	226072	.	-	.	ID=ALT2242p_00234_gene;locus_tag=ALT2242p_00234
+Alteromonas2242plasmid	Prodigal:2.6	CDS	225644	226072	.	-	0	ID=ALT2242p_00234;Parent=ALT2242p_00234_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00234;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	226213	226665	.	-	.	ID=ALT2242p_00235_gene;locus_tag=ALT2242p_00235
+Alteromonas2242plasmid	Prodigal:2.6	CDS	226213	226665	.	-	0	ID=ALT2242p_00235;Parent=ALT2242p_00235_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00235;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	226809	227384	.	-	.	ID=ALT2242p_00236_gene;locus_tag=ALT2242p_00236
+Alteromonas2242plasmid	Prodigal:2.6	CDS	226809	227384	.	-	0	ID=ALT2242p_00236;Parent=ALT2242p_00236_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00236;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	227625	227831	.	+	.	ID=ALT2242p_00237_gene;locus_tag=ALT2242p_00237
+Alteromonas2242plasmid	Prodigal:2.6	CDS	227625	227831	.	+	0	ID=ALT2242p_00237;Parent=ALT2242p_00237_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00237;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	227844	228395	.	+	.	ID=ALT2242p_00238_gene;locus_tag=ALT2242p_00238
+Alteromonas2242plasmid	Prodigal:2.6	CDS	227844	228395	.	+	0	ID=ALT2242p_00238;Parent=ALT2242p_00238_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00238;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	228378	228704	.	-	.	ID=ALT2242p_00239_gene;locus_tag=ALT2242p_00239
+Alteromonas2242plasmid	Prodigal:2.6	CDS	228378	228704	.	-	0	ID=ALT2242p_00239;Parent=ALT2242p_00239_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00239;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	229105	229434	.	-	.	ID=ALT2242p_00240_gene;locus_tag=ALT2242p_00240
+Alteromonas2242plasmid	Prodigal:2.6	CDS	229105	229434	.	-	0	ID=ALT2242p_00240;Parent=ALT2242p_00240_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00240;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	229645	229854	.	+	.	ID=ALT2242p_00241_gene;locus_tag=ALT2242p_00241
+Alteromonas2242plasmid	Prodigal:2.6	CDS	229645	229854	.	+	0	ID=ALT2242p_00241;Parent=ALT2242p_00241_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00241;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	229933	230808	.	+	.	ID=ALT2242p_00242_gene;locus_tag=ALT2242p_00242
+Alteromonas2242plasmid	Prodigal:2.6	CDS	229933	230808	.	+	0	ID=ALT2242p_00242;Parent=ALT2242p_00242_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00242;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	231237	232349	.	-	.	ID=ALT2242p_00243_gene;locus_tag=ALT2242p_00243
+Alteromonas2242plasmid	Prodigal:2.6	CDS	231237	232349	.	-	0	ID=ALT2242p_00243;Parent=ALT2242p_00243_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00243;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	232477	233619	.	+	.	ID=ALT2242p_00244_gene;Name=soj;gene=soj;locus_tag=ALT2242p_00244
+Alteromonas2242plasmid	Prodigal:2.6	CDS	232477	233619	.	+	0	ID=ALT2242p_00244;Parent=ALT2242p_00244_gene;eC_number=3.6.-.-;Name=soj;gene=soj;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:P37522;locus_tag=ALT2242p_00244;product=Sporulation initiation inhibitor protein Soj
+Alteromonas2242plasmid	prokka	gene	233612	234571	.	+	.	ID=ALT2242p_00245_gene;Name=spo0C;gene=spo0C;locus_tag=ALT2242p_00245
+Alteromonas2242plasmid	Prodigal:2.6	CDS	233612	234571	.	+	0	ID=ALT2242p_00245;Parent=ALT2242p_00245_gene;Name=spo0C;gene=spo0C;inference=ab initio prediction:Prodigal:2.6,similar to AA sequence:UniProtKB:Q72H91;locus_tag=ALT2242p_00245;product=Chromosome-partitioning protein Spo0J
+Alteromonas2242plasmid	prokka	gene	235463	235864	.	+	.	ID=ALT2242p_00246_gene;locus_tag=ALT2242p_00246
+Alteromonas2242plasmid	Prodigal:2.6	CDS	235463	235864	.	+	0	ID=ALT2242p_00246;Parent=ALT2242p_00246_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00246;product=hypothetical protein
+Alteromonas2242plasmid	prokka	gene	235857	237149	.	-	.	ID=ALT2242p_00247_gene;locus_tag=ALT2242p_00247
+Alteromonas2242plasmid	Prodigal:2.6	CDS	235857	237149	.	-	0	ID=ALT2242p_00247;Parent=ALT2242p_00247_gene;inference=ab initio prediction:Prodigal:2.6;locus_tag=ALT2242p_00247;product=hypothetical protein
+###

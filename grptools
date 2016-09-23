@@ -308,6 +308,65 @@ def subtract(args):
     write_grp(outfile, first_headers, first_grp_arrays, toInt)
 
 
+def intersect(args):
+    # TODO: apply intersect also for coverage, to eliminate sparsy coverage
+    """
+    given two grp files, only keep tss positions shared by them, set tss positions occured in one grp to 0
+    """
+    prefix = args.prefix
+    first_grp = args.first_grp
+    second_grp = args.second_grp
+    toInt = args.toInt
+
+
+    if prefix:
+        outfile1 = prefix + "_first.grp"
+        outfile2 = prefix + "_second.grp"
+    else:
+        basename1 = os.path.basename(first_grp)
+        filestem1 = os.path.splitext(basename1)[0]
+        outfile1 = filestem1 + "_intersected.grp"
+        basename2 = os.path.basename(second_grp)
+        filestem2 = os.path.splitext(basename2)[0]
+        outfile2 = filestem2 + "_intersected.grp"
+
+    first_headers, first_grp_arrays = read_grp(first_grp)
+    ncol = get_ncol(first_headers)
+    second_headers, second_grp_arrays = read_grp(second_grp)
+    assert get_ncol(second_headers) == ncol, "The input grp files have different number of columns!"
+
+    # get tss arrays
+    if ncol == 2:
+        first_tss_arrays = first_grp_arrays
+        second_tss_arrays = second_grp_arrays
+    else:
+        first_tss_arrays = [first_grp_arrays[1], first_grp_arrays[3]]
+        second_tss_arrays = [second_grp_arrays[1], second_grp_arrays[3]]
+
+    # intersect two arrays
+    for i, arr in enumerate(first_tss_arrays):
+        first_arr = arr
+        second_arr = second_tss_arrays[i]
+
+        for j, (v1, v2) in enumerate(zip(first_arr, second_arr)):
+            if v1 > 0 and v2 == 0:
+                first_tss_arrays[i][j] = 0
+            elif v1 == 0 and v2 > 0:
+                second_tss_arrays[i][j] = 0
+
+
+    # setup return arrays
+    if ncol == 2:
+        res_first_arrays = first_tss_arrays
+        res_second_arrays = second_tss_arrays
+    else:
+        res_first_arrays = [first_grp_arrays[0], first_tss_arrays[0], first_grp_arrays[2], first_tss_arrays[1]]
+        res_second_arrays = [second_grp_arrays[0], second_tss_arrays[0], second_grp_arrays[2], second_tss_arrays[1]]
+
+    write_grp(outfile1, first_headers, res_first_arrays, toInt)
+    write_grp(outfile2, second_headers, res_second_arrays, toInt)
+
+
 def summarize(args):
     """
     summarize basic contents of given grp file
@@ -369,11 +428,23 @@ def slice(args):
 
 
 def normalize(args):
-    # TODO : make it works for both tss and coverage, both can be normalized by the sum of tss counts
     """
-    normalize input grp file, this function only works for 2 column coverage/tss grp file,
-    it will first sum up all the fwd and rev values, divide each value against the sum, then
-    multiply each value by multiplier, write out a new grp file
+    normalize input grp file, this function will first sum up all the fwd and rev values in tss columns, then
+    divide each value against the summed tss. If a multiplier given, then each value will be multiplied by this
+    multiplier,
+
+    The grp file should have 4 columns as below:
+
+    # BASE fwd_cov fwd_tss rev_cov rev_tss
+    # colour 0:204:0 255:0:0 0:0:255 255:0:0
+    1 0.00 0.00 -0.00 -0.00
+    2 0.00 0.00 -0.00 -0.00
+
+    or 2 columns like below:
+
+    # BASE fwd_tss rev_tss
+    # colour 0:204:0 0:0:255
+
     """
     input_grp = args.input_grp
     multiplier = args.multiplier
@@ -390,12 +461,15 @@ def normalize(args):
     # do normalization
     headers, arrays = read_grp(input_grp)
     ncol = get_ncol(headers)
-    assert ncol == 2, \
-        "normalize only supports 2 column grp file, please slice your grp file first!"
-    total = sum(arrays[0]) + sum(arrays[1])
+
+    if ncol == 4:
+        total_tss = sum(arrays[1]) + sum(arrays[3])
+    else:
+        total_tss = sum(arrays[0]) + sum(arrays[1])
+
     new_arrays = []
     for arr in arrays:
-        arr = multiplier*arr/total
+        arr = multiplier*arr/total_tss
         new_arrays.append(arr)
 
     write_grp(outfile, headers, new_arrays, toInt)
@@ -487,7 +561,7 @@ def aggregate(args):
     aggregate tss from surrounding positons, to increase the signal of most likely tss, and remove blurry signals
     """
     input_grp = args.input_tss_grp
-    length = args.length
+    region = args.region
     prefix = args.prefix
     toInt = args.toInt
 
@@ -503,7 +577,7 @@ def aggregate(args):
     # group tss
     new_arrays = []
     for arr in arrays:
-        new_arr = group_tss(arr, before=length, after=length)
+        new_arr = group_tss(arr, before=region, after=region)
         new_arrays.append(new_arr)
 
     write_grp(outfile, headers, new_arrays, toInt)
@@ -563,6 +637,15 @@ def main():
 
 
     # --------- #
+    # intersect #
+    # --------- #
+    parser_intersect = subparsers.add_parser('intersect', parents=[parent_parser], help='intersect two grp files, to '
+                                                                                        'keep only shared tss positions')
+    parser_intersect.add_argument('first_grp', help='first grp file to be intersected')
+    parser_intersect.add_argument('second_grp', help='second grp file to be intersected')
+    parser_intersect.set_defaults(func=intersect)
+
+    # --------- #
     # summarize #
     # --------- #
     parser_summarize = subparsers.add_parser('summarize', parents=[parent_parser], help='summarize input grp file')
@@ -586,7 +669,8 @@ def main():
     parser_normalize = subparsers.add_parser('normalize', parents=[parent_parser], help='normalize input grp file')
     parser_normalize.add_argument('input_grp', help='input grp file to be normalized')
     parser_normalize.add_argument('multiplier', type=int,
-                                  help='the number to be multiplied after library normalization')
+                                  help='the number to be multiplied after library normalization, normally the '
+                                       'read count of largest library.')
     parser_normalize.set_defaults(func=normalize)
 
 
@@ -606,7 +690,8 @@ def main():
     parser_aggregate = subparsers.add_parser('aggregate', parents=[parent_parser],
                                              help='aggregate tss from surrounding positions')
     parser_aggregate.add_argument('input_tss_grp', help='input tss grp file')
-    parser_aggregate.add_argument('-l', '--length', type=int, default=5, help='the length of upstream/downstream region')
+    parser_aggregate.add_argument('-r', '--region', type=int, default=5, help='the length of upstream or '
+                                                                              'downstream region')
     parser_aggregate.set_defaults(func=aggregate)
 
 
