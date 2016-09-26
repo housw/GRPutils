@@ -98,6 +98,14 @@ class BaseGffRecord(object):
         # update self.attribute_dict
         self.attribute_dict = self._get_attribute_dict()
 
+    def update_hierarchical_relationships(self):
+        for ID, gff in BaseGffRecord.id2records.iteritems():
+            parentID = gff.get_subattribute('parent')
+            if parentID:
+                parent = BaseGffRecord.id2records[parentID]
+                parent.add_child(gff)
+                gff.set_parent(parent)
+
     def __str__(self):
         return self.seqname+"\t"+self.source+"\t"+self.feature+"\t"+\
                str(self.start)+"\t"+str(self.end)+"\t"+self.score+"\t"+\
@@ -110,9 +118,10 @@ class Gene(BaseGffRecord):
     id2genes = {} # store all the geneID:geneObj
 
     def __init__(self, seqname, source, feature, start, end, score, strand, frame, attribute):
-        self.childrenID = []
         self.children = []
         super(Gene, self).__init__(seqname, source, feature, start, end, score, strand, frame, attribute)
+        self.Name = self.get_Name()
+        self.product = self.get_product()
 
         # add this gene to id2genes dict
         Gene.id2genes.update({self.get_subattribute('ID'):self})
@@ -120,31 +129,22 @@ class Gene(BaseGffRecord):
     def add_child(self, child):
         if isinstance(child, BaseGffRecord):
             self.children.append(child)
-            self.childrenID.append(child.ID)
         else:
             print "Child should be GffRecord instance !"
 
-
-    def add_childID(self, childID):
-        self.childrenID.append(childID)
-        if childID in BaseGffRecord.id2records:
-            self.children.append(BaseGffRecord.id2records[childID])
-
     def get_children(self, id2records):
-        children = []
-        for _id in self.childrenID:
-            try:
-                child = id2records[_id]
-            except KeyError as e:
-                print "ERROR: child with id %s was not found in the gff file"%_id
-                raise Exception("child id wasn't found!")
-            children.append(child)
-        return children
+        return self.children
+
+    def get_Name(self):
+        name = self.get_subattribute('Name')
+        if not name:
+            name = self.get_subattribute('locus_tag')
+        return name
 
     def get_product(self):
         """try to return gene's product first, if failed, then children's product"""
-        product = self.get_subattribute('product', None)
-        if not product:
+        product = self.get_subattribute('product')
+        if not product and self.children:
             product = self.children[0].attributes.get("product", None)
         return product
 
@@ -154,29 +154,75 @@ class Region(BaseGffRecord):
 class CDS(BaseGffRecord):
     """CDS records"""
 
-class tRNA(BaseGffRecord):
+    id2cds = {} # store all the cdsID:CDSObj
+
+    def __init__(self, seqname, source, feature, start, end, score, strand, frame, attribute):
+        self.parent = None
+        super(CDS, self).__init__(seqname, source, feature, start, end, score, strand, frame, attribute)
+
+        # add this cds to id2cds dict
+        CDS.id2cds.update({self.get_subattribute('ID'):self})
+
+    def set_parent(self, parent):
+        if isinstance(parent, Gene):
+            self.parent = parent
+        else:
+            print "Parent of CDS should be Gene instance !"
+
+
+class RNA(BaseGffRecord):
+    """RNA records, super class of tRNA, rRNA, ncRNA, misc_RNA, ..."""
+
+    id2rna = {} # store all the rnaID:RNAObject
+
+    def __init__(self, seqname, source, feature, start, end, score, strand, frame, attribute):
+        self.parent = None
+        self.children = []
+
+        super(RNA, self).__init__(seqname, source, feature, start, end, score, strand, frame, attribute)
+
+        # add this rna to id2rna dict
+        RNA.id2rna.update({self.get_subattribute('ID'):self})
+
+    def set_parent(self, parent):
+        if isinstance(parent, Gene):
+            self.parent = parent
+        else:
+            print "Parent of RNA should be Gene instance !"
+
+    def add_child(self, child):
+        if isinstance(child, BaseGffRecord):
+            self.children.append(child)
+        else:
+            print "Child of RNA should be BaseGffRecord instance !"
+
+
+class tRNA(RNA):
     """tRNA records"""
 
-class rRNA(BaseGffRecord):
+class rRNA(RNA):
     """rRNA records"""
 
-class tmRNA(BaseGffRecord):
+class tmRNA(RNA):
     """tmRNA records"""
 
-class misc_RNA(BaseGffRecord):
+class misc_RNA(RNA):
     """misc_RNA records"""
 
-class ncRNA(BaseGffRecord):
+class ncRNA(RNA):
     """ncRNA"""
+
+class Exon(RNA):
+    """exon"""
+
+class Transcript(RNA):
+    """transcript"""
 
 class repeat_Region(BaseGffRecord):
     """repeat_region"""
 
-class Transcript(BaseGffRecord):
-    """transcript"""
 
-class Exon(BaseGffRecord):
-    """exon"""
+
 
 class GffRecordParser(object):
     """ This class used to parse gff3 file, to generate BaseGffRecord instances
@@ -243,15 +289,15 @@ class TSS():
     fwd_pos2tss = {} # {position:TSS}
     rev_pos2tss = {} # {position:TSS}
 
-    def __init__(self, pos, strand, tss, cov):
-        self.pos = pos
-        self.ID = self.pos
-        self.Name = None
+    def __init__(self, idx, strand, tss, cov):
+        self.ID = None
+        self.Name = self.ID
+        self.idx = idx
         self.strand = strand
-        self.tss = tss
-        self.cov = cov
+        self.tss = float(tss)
+        self.cov = float(cov)
         # here if no cov, then we assume this should not be a tss, set ratio to 0
-        self.ratio = 0 if self.cov == 0 else self.tss/float(self.cov) # tss/cov
+        self.ratio = 0 if self.cov == 0 else self.tss/self.cov # tss/cov
         self.locTssEnrich = None       # (upstream+TSS)/(upstream+TSS+downstream), the more sharp in up and down, the more like to be TSS
         self.locCovEnrich = None       # downstream/(upstream+downstream), the more adjacent to 1, the more steep after this TSS, the more likely
         self.type = None
@@ -266,17 +312,17 @@ class TSS():
 
         # update this TSS instance to pos2tss
         if self.strand == "+":
-            TSS.fwd_pos2tss.update({self.pos:self})
+            TSS.fwd_pos2tss.update({self.idx:self})
         else:
             assert self.strand == "-", "TSS strand should be + or - !"
-            TSS.rev_pos2tss.update(({self.pos:self}))
+            TSS.rev_pos2tss.update(({self.idx:self}))
 
     def update_ID(self):
-        if self.type != None:
-            self.ID = self.type + self.strand + str(self.pos+1)
+        if self.type is not None:
+            self.ID = self.type + self.strand + str(self.idx+1)
 
     def _replaceNone(self, item):
-        if item == None:
+        if item is None:
             return "None"
         else:
             return str(item)
@@ -320,22 +366,76 @@ class TSS():
 
     def __str__(self):
         return self.ID + "\t" + str(self.tss) + "\t" + self.type + "\t" + \
-               str(self.pos+1) + "\t" + str(self.pos+1) + "\t" + self._replaceNone(self.description) \
+               str(self.idx+1) + "\t" + str(self.idx+1) + "\t" + self._replaceNone(self.description) \
                + "\t" + self.strand + "\t" + self._replaceNone(self.product) + "\t" + self.attribute + "\n"
 
 
+def _calculate_local_TSS_enrichment_score(idx, strand, tss_arr, length=100):
+    """This function used to calculate the local tss enrichment score for a given tss and enrichment length,
+       the more a TSS obvious, the surrounding tss are more less obvious, in a certain region, like 100nt,
+       if we assume only one TSS for each genes in this region.
 
-def read_gff(input_gff):
-    gff_records = GffRecordParser(input_gff)
-    for gff in gff_records:
-        print "Input GFF record:", gff
-        print "Input GFF feature:", gff.feature
-        print "--------------------\n"
+    """
+    currCount = tss_arr[idx]
+    if strand == "+":
+        currCount = idx
+        sum_upstream = sum(tss_arr[idx-length:idx])
+        sum_downstream = sum(tss_arr[idx+1:idx+length+1])
+        #le = (sumleft+currCount)/(sumleft+sumright+currCount)  # local enrichment
+        ltes = currCount/(sum_upstream+sum_downstream+currCount)
+    else:
+        currCount = tss_arr[idx]
+        sum_upstream = sum(tss_arr[idx+1:idx+length+1])
+        sum_downstream = sum(tss_arr[idx-length:idx])
+        #le = (sumleft+currCount)/(sumleft+sumright+currCount) # local enrichment
+        ltes = currCount/(sum_upstream+sum_downstream+currCount)
 
-    print BaseGffRecord.id2records.keys()
+    return ltes
 
-def test(args):
-    read_gff(args.gff)
+
+def _calculate_local_cov_enrichment_score(idx, strand, cov_arr, length=10):
+    """This function used to calculate the local coverage enrichment score for a given tss and enrichment length,
+       the more one TSS likely, the slope around this TSS should be more steep, so we can calculate the coverage
+       after this TSS, devide by coverage around this TSS, to get an coverage enrichment score
+    """
+    if strand == "+":
+        sum_upstream = sum(cov_arr[idx-length:idx])
+        sum_downstream = sum(cov_arr[idx:idx+length]) # downstream including the TSS position
+    else:
+        strand == "-", "TSS strand should be + or -, not %s"%strand
+        sum_upstream = sum(cov_arr[idx+1:idx+1+length])
+        sum_downstream = sum(cov_arr[idx+1-length:idx+1]) # downstream including the TSS position
+
+    lces= float(sum_downstream)/(sum_upstream+sum_downstream)
+
+    return lces
+
+
+def update_merged_cov_region(tss, merged_cov):
+    """ this function will be used to record the coverage > 1 region downstream
+        of tss, and will get a start and end tuple, recording the coordinate of
+        coverage region, which will be used in gTSS prediction
+    """
+    # fwd tss, record coverage values after tss
+    if tss.strand == "+":
+        # then find all the idx that more than 1, to find the end region
+        for i, v in enumerate(merged_cov[tss.idx:]):
+            if v > 1:
+                continue
+            else:
+                tss.merged_cov_region =tuple([tss.idx, tss.idx+i])
+                break
+    # rev tss, record coverage values downstream tss
+    else:
+        assert tss.strand == "-", "tss strand should be -, not %s"%tss.strand
+        # then find all the idx that more than 1, append to the rdm_region list
+        rev_region = merged_cov[0:tss.idx]
+        for i, v in enumerate(rev_region[::-1]):
+            if v > 1:
+                continue
+            else:
+                tss.merged_cov_region = tuple([tss.idx-i, tss.idx])
+                break
 
 
 
@@ -352,30 +452,413 @@ def grp2TssTable(args):
     prefix = args.prefix
 
     if prefix:
-        outfile = prefix + "_tss.tab"
+        outfile = prefix + "_grp2tss.tab"
     else:
         basename = os.path.basename(dRNA_grp)
         filestem = os.path.splitext(basename)[0]
-        outfile = filestem + "_tss.tab"
+        outfile = filestem + "_grp2tss.tab"
 
     headers, arrays = _read_grp(dRNA_grp)
     assert len(arrays) == 4, "Input grp file should have coverage and tss info for both strands, please check again!"
 
     with open(outfile, "w") as oh:
-        oh.write("#1-based_Pos\tstrand\ttss\tcov\n")
+        oh.write("#1-based_Pos\tstrand\ttss\tcov\tratio\tlocCovEnrich\tlocTssEnrich\n")
         fwd_cov, fwd_tss, rev_cov, rev_tss = arrays
         for i, (cov, tss) in enumerate(zip(fwd_cov, fwd_tss)):
             if tss > 0:
-                oh.write(str(i+1) +"\t+"+"\t"+str(tss)+"\t"+str(cov)+"\n")
+                idx = i
+                pos = idx + 1
+                if tss > cov:
+                    tss = cov
+                ratio = tss/cov
+                lces = _calculate_local_cov_enrichment_score(idx,"+", fwd_cov, 10)
+                ltes = _calculate_local_TSS_enrichment_score(idx, "+", fwd_tss, 100)
+                oh.write(str(idx) +"\t+"+"\t"+str(tss)+"\t"+str(cov)+"\t%.2f"%ratio+"\t%.2f"%lces+"\t%.2f"%ltes+"\n")
         for i, (cov, tss) in enumerate(zip(rev_cov, rev_tss)):
             if tss > 0:
-                oh.write(str(i + 1) + "\t+" + "\t" + str(tss) + "\t" + str(cov) + "\n")
+                idx = i
+                pos = idx + 1
+                if tss > cov:
+                    tss = cov
+                ratio = tss/cov
+                lces = _calculate_local_cov_enrichment_score(idx,"-", rev_cov, 10)
+                ltes = _calculate_local_TSS_enrichment_score(idx, "-", rev_tss, 100)
+                oh.write(str(idx) +"\t+"+"\t"+str(tss)+"\t"+str(cov)+"\t%.2f"%ratio+"\t%.2f"%lces+"\t%.2f"%ltes+"\n")
+
+
+def _get_gene_dict_from_gff(gff_file):
+    """ this function used to generate fwd_gene_dict and rev_gene_dict from gff
+    """
+    fwd_gene_dict = {} # data format {all_idx: fwd_gene}
+    rev_gene_dict = {}
+    fwd_gene_starts_dict = {} # data format {start_idx: fwd_gene}
+    rev_gene_starts_dict = {}
+
+    # read gff file and store gene info
+    gff_records = GffRecordParser(gff_file)
+    for gff in gff_records:
+        if isinstance(gff, Gene):
+            gene = gff
+
+            if gene.strand == "+":
+                fwd_gene_starts_dict.update({gene.start-1:gene})
+                for x in xrange(gene.start-1, gene.end):
+                    if not fwd_gene_dict.has_key(x):
+                        fwd_gene_dict.update({x:gene})
+                    else:
+                        # if two fwd gene overlap, assign this idx to latter one
+                        fwd_gene_dict[x] = gene
+            else:
+                assert gene.strand == "-", "gene strand should be +/- !"
+                rev_gene_starts_dict.update({gene.end-1:gene})
+                # gff is 1-based, python is 0-based
+                for x in xrange(gene.start-1, gene.end):
+                    if not rev_gene_dict.has_key(x):
+                        rev_gene_dict.update({x:gene})
+                    else:
+                        # if two rev gene overlap, assign this idx to formmer one
+                        continue
+
+    return fwd_gene_dict, rev_gene_dict, fwd_gene_starts_dict, rev_gene_starts_dict
+
+
+######################## find nearest gene ####################################
+
+def getLeft(idx, Dict):
+    """Find gene in Dict, at left direction of idx, return gene instance or None"""
+    left = False
+    while not left:
+        idx -= 1
+        if Dict.has_key(idx):
+            left=True
+            return Dict[idx]
+        if idx < 0:
+            left=True
+            return None
+
+
+def getRight(idx, Dict, genomeLen):
+    """Find gene in Dict, at right direction of idx, return gene instance or None"""
+    right = False
+    while not right:
+        idx += 1
+        if Dict.has_key(idx):
+            right = True
+            return Dict[idx]
+        if idx > genomeLen:
+            right=True
+            return None
 
 
 
-def predict(args):
-    pass
+def find_nearest_gene(tss, fwd_gene_dict, rev_gene_dict, fwd_gene_starts_dict,
+                                           rev_gene_starts_dict, genome_length):
+    """ take tss object and fwd/rev gene dict as inputs, will look for current
+        gene, upstream gene and downstream gene for this tss.
+    """
+    idx, strand = tss.idx, tss.strand
 
+    # fwd tss
+    if strand == "+":
+        # update currentGene
+        currentGene = fwd_gene_dict.get(idx, None)
+        tss.currentGene = currentGene
+
+        # check current idx if a start or not
+        currentStart = fwd_gene_starts_dict.get(idx, None)
+
+        # update downstreamGene
+        if currentGene and not currentStart:
+            downstreamGene = getRight(currentGene.end, fwd_gene_dict, genome_length)
+        else:
+            downstreamGene = getRight(idx, fwd_gene_dict, genome_length)
+        tss.downstreamGene = downstreamGene
+
+        # update antiNearestGene
+        antiCurrent = rev_gene_dict.get(idx, None)
+        if antiCurrent:
+            antiNearestGene = antiCurrent
+        else:
+            antiLeft = getLeft(idx, rev_gene_dict)
+            antiRight = getRight(idx, rev_gene_dict, genome_length)
+            if antiLeft and antiRight:
+                if idx - (antiLeft.end-1) >= (antiRight.start-1) - idx:
+                    antiNearestGene = antiRight
+                else:
+                    antiNearestGene = antiLeft
+            else:
+                if antiLeft:
+                    antiNearestGene = antiLeft
+                elif antiRight:
+                    antiNearestGene = antiRight
+                else:
+                    antiNearestGene = None
+        tss.antiNearestGene = antiNearestGene
+
+    else:
+        assert strand == "-", "strand should be +/-, not %s !"%strand
+        # update currentGene
+        currentGene = rev_gene_dict.get(idx, None)
+        tss.currentGene = currentGene
+
+        # check current idx if a start or not
+        currentStart = rev_gene_starts_dict.get(idx, None)
+
+        # update downstreamGene
+        if currentGene and not currentStart:
+            downstreamGene = getLeft(currentGene.start-2, rev_gene_dict)
+        else:
+            downstreamGene = getLeft(idx, rev_gene_dict)
+        tss.downstreamGene = downstreamGene
+
+        # update antiNearestGene
+        antiCurrent = fwd_gene_dict.get(idx, None)
+        if antiCurrent:
+            antiNearestGene = antiCurrent
+        else:
+            antiLeft = getLeft(idx, fwd_gene_dict)
+            antiRight = getRight(idx, fwd_gene_dict, genome_length)
+            if antiLeft and antiRight:
+                if idx - (antiLeft.end-1) >= (antiRight.start-1)-idx:
+                    antiNearestGene = antiRight
+                else:
+                    antiNearestGene = antiLeft
+            else:
+                if antiLeft:
+                    antiNearestGene = antiLeft
+                elif antiRight:
+                    antiNearestGene = antiRight
+                else:
+                    antiNearestGene = None
+        tss.antiNearestGene = antiNearestGene
+
+
+def gTSS_check(tss):
+    """ this function used to check gTSS
+    """
+    downstreamGene = tss.downstreamGene
+    if downstreamGene:
+        # tss locates at fwd
+        if tss.strand == "+":
+            downstream_dist = (downstreamGene.start-1)-tss.idx
+        # tss locates at rev
+        else:
+            assert tss.strand == "-", "tss strand should be +/- !"
+            downstream_dist = tss.idx - (downstreamGene.end-1)
+
+        # update tss type, description and product
+        # gTSS, upstream of 200 nt
+        if downstream_dist <= 200:
+            tss.type = "gTSS"
+            tss.description = "gTSS, %d bp upstream of gene %s."%\
+                            (downstream_dist, downstreamGene.Name)
+            tss.product = downstreamGene.product
+
+
+        # gTSS, more than 200nt, the merged coverage region around TSS overlaps with downstream gene,
+        # and the overlaps more than 1/3 of the gene
+        elif tss.merged_cov_region != None:
+            if tss.strand == "+" and abs(tss.merged_cov_region[1]) > downstreamGene.start:
+            #if tss.strand == "+" and abs(tss.merged_cov_region[1] - downstreamGene.start) > 0.333*abs(downstreamGene.start - downstreamGene.end):
+                #print "One gTSS long than 200 nt found on fwd strand"
+                tss.type = "gTSS"
+                tss.description = "gTSS, %d bp upstream of gene %s."%\
+                                (downstream_dist, downstreamGene.Name)
+                tss.product = downstreamGene.product
+            elif tss.strand == "-" and tss.merged_cov_region[0] < downstreamGene.end:
+            #elif tss.strand == "-" and abs(tss.merged_cov_region[0] - downstreamGene.end) > 0.333*abs(downstreamGene.start-downstreamGene.end):
+                #print "One gTSS long than 200 nt found on rev strand"
+                tss.type = "gTSS"
+                tss.description = "gTSS, %d bp upstream of gene %s."%\
+                                (downstream_dist, downstreamGene.Name)
+                tss.product = downstreamGene.product
+
+
+def iTSS_check(tss):
+    """ this function used to check iTSS
+    """
+    currentGene = tss.currentGene
+    if currentGene:
+        # tss locates at fwd
+        if tss.strand == "+":
+            inside_dist = tss.idx - (currentGene.start-1)
+        # tss locates at rev
+        else:
+            assert tss.strand == "-", "tss strand should be +/- !"
+            inside_dist = currentGene.end-1 - tss.idx
+        # update tss type, description and product
+        tss.type = "iTSS"
+        tss.description = "iTSS, %d bp inside of gene %s."%\
+                        (inside_dist, currentGene.Name)
+        tss.product = currentGene.product
+
+
+def aTSS_check(tss):
+    """ this function used to check aTSS
+    """
+    antiNearestGene = tss.antiNearestGene
+
+    # antiRight
+    if antiNearestGene.start-1 > tss.idx:
+        anti_dist = (antiNearestGene.start-1) - tss.idx
+        if anti_dist <= 50:
+            tss.type = "aTSS"
+            tss.product = antiNearestGene.product
+            if tss.strand == "+":
+                tss.description = "aTSS, %d bp downstream of reverse gene %s"%\
+                                            (anti_dist, antiNearestGene.Name)
+            else:
+                tss.description = "aTSS, %d bp upstream of forward gene %s"%\
+                                            (anti_dist, antiNearestGene.Name)
+
+    # antiLeft
+    elif antiNearestGene.end-1 < tss.idx:
+        anti_dist = tss.idx-(antiNearestGene.end-1)
+        if anti_dist <= 50:
+            tss.type = "aTSS"
+            tss.product = antiNearestGene.product
+            if tss.strand == "+":
+                tss.description = "aTSS, %d bp upstream of reverse gene %s"%\
+                                            (anti_dist, antiNearestGene.Name)
+            else:
+                tss.description = "aTSS, %d bp downstream of forward gene %s"%\
+                                            (anti_dist, antiNearestGene.Name)
+
+    # antiCurrent
+    else:
+        tss.type = "aTSS"
+        tss.product = antiNearestGene.product
+        if tss.strand == "+":
+            anti_dist = (antiNearestGene.end-1) - tss.idx
+            tss.description = "aTSS, %d bp downstream of reverse gene %s"\
+                            %(anti_dist, antiNearestGene.Name)
+        else:
+            anti_dist = tss.idx - (antiNearestGene.start-1)
+            tss.description = "aTSS, %d bp downstream of forward gene %s"\
+                            %(anti_dist, antiNearestGene.Name)
+
+
+def nTSS_check(tss):
+    """ this function used to check nTSS
+    """
+    assert tss.currentGene == None, "currentGene exists, should not be nTSS !"
+
+    antiNearestGene, downstreamGene = tss.antiNearestGene, tss.downstreamGene
+    # change to 1 based coordinate
+    tss.description = "nTSS, at position %d on %s strand"%(tss.idx+1, tss.strand)
+
+    if downstreamGene:
+        if tss.strand == "+":
+            assert (downstreamGene.start-1) - tss.idx > 200, "distance between tss\
+                and downstreamGene is less than 200, should not be nTSS !"
+        else:
+            assert tss.idx - (downstreamGene.end -1) > 200, "distance between tss\
+                and downstreamGene is less than 200, should not be nTSS !"
+        tss.description += ", before gene %s"%(downstreamGene.Name)
+
+    if antiNearestGene:
+        assert tss.idx - (antiNearestGene.end-1) > 50 or \
+                (antiNearestGene.start-1) - tss.idx > 50, "distance between tss \
+                and antiNearestGene is less than 50, should not be nTSS !"
+    tss.description += ", antistrand nearest gene is %s"%(antiNearestGene.Name)
+
+    tss.type = "nTSS"
+    tss.product = "nTSS"
+
+
+def classify_tss_type_and_update_description(tss):
+    """ this function will be used to classify tss type and update description field
+    """
+    if not tss.type:
+        gTSS_check(tss)
+    if not tss.type:
+        iTSS_check(tss)
+    if not tss.type:
+        aTSS_check(tss)
+    if not tss.type:
+        nTSS_check(tss)
+
+    assert tss.type != None, "One kind of TSS should be assigned !"
+
+
+def parse_tssTable(tssTable):
+    """parse tssTable, yield TSS instances"""
+
+    attributes = []
+    fwd_tss_dict = {} # {idx:tss}
+    rev_tss_dict = {} # {idx:tss
+
+    with open(tssTable, "r") as ih:
+        header = ih.readline()
+        attributes = header.strip().split("\t")
+        for line in ih:
+            line = line.strip().split("\t")
+            idx = int(line[0])-1
+            strand = line[attributes.index('strand')]
+            tss = line[attributes.index('tss')]
+            cov = line[attributes.index('cov')]
+            rawTss = TSS(idx, strand, tss, cov)
+            for i, attr in enumerate(attributes[1:]):
+                if attr not in ['strand', 'tss', 'cov']:
+                    setattr(rawTss, attr, line[i+1])
+            if strand == "+":
+                fwd_tss_dict.update({idx:rawTss})
+            else:
+                assert strand == "-", "TSS strand should be + or -, not %s"%strand
+                rev_tss_dict.update({idx:rawTss})
+
+    return fwd_tss_dict, rev_tss_dict
+
+
+def classify(args):
+    """classify TSS into gTSS, iTSS, nTSS, aTSS"""
+    tssTable = args.tssTable
+    gffFile = args.gffFile
+    grpFile = args.grpFile
+    prefix = args.prefix
+
+    if prefix:
+        outfile = prefix + "_classified.tab"
+    else:
+        basename = os.path.basename(tssTable)
+        filestem = os.path.splitext(basename)[0]
+        outfile = filestem + "_classified.tab"
+
+    # parse tssTable and gffFile
+    fwd_tss_dict, rev_tss_dict = parse_tssTable(tssTable)
+    fwd_gene_dict, rev_gene_dict, fwd_gene_starts_dict, rev_gene_starts_dict = \
+                                             _get_gene_dict_from_gff(gffFile)
+    # get genome length
+    headers, arrays = _read_grp(grpFile)
+    genome_length = len(arrays[0])
+    fwd_cov, rev_cov = arrays[0], arrays[2]
+
+    # find nearest gene for each tss
+    for idx, tss in fwd_tss_dict.iteritems():
+        find_nearest_gene(tss, fwd_gene_dict, rev_gene_dict, fwd_gene_starts_dict,
+                          rev_gene_starts_dict, genome_length)
+
+    for idx, tss in rev_tss_dict.iteritems():
+        find_nearest_gene(tss, fwd_gene_dict, rev_gene_dict, fwd_gene_starts_dict,
+                          rev_gene_starts_dict, genome_length)
+
+    # classify tss type, and update tss description
+    for tss in fwd_tss_dict.itervalues():
+        update_merged_cov_region(tss, fwd_cov)
+        classify_tss_type_and_update_description(tss)
+        tss.update_ID()
+    for tss in rev_tss_dict.itervalues():
+        update_merged_cov_region(tss, rev_cov)
+        classify_tss_type_and_update_description(tss)
+        tss.update_ID()
+
+    with open(outfile, 'w') as oh:
+        for tss in fwd_tss_dict.itervalues():
+            print tss.ID, tss.idx, tss.type, tss.tss, tss.cov
+            oh.write(str(tss)+"\n")
+        for tss in rev_tss_dict.iteritems():
+            print str(tss)
+            oh.write(str(tss)+"\n")
 
 def main():
 
@@ -392,24 +875,6 @@ def main():
     subparsers = parser.add_subparsers(help='available subcommands')
 
 
-    # ------- #
-    # predict #
-    # ------- #
-    parser_predict = subparsers.add_parser('predict', parents=[parent_parser],
-                                           help='predict tss based on given grp files')
-    parser_predict.add_argument('dRNA_grp', help='input grp file from dRNA-Seq')
-    parser_predict.add_argument('-r', '--RNA_grp', help='input grp file from RNA-Seq')
-    parser_predict.set_defaults(func=predict)
-
-
-    # ---- #
-    # test #
-    # -----#
-    parser_test = subparsers.add_parser('test', parents=[parent_parser], help='test')
-    parser_test.add_argument('gff', help='input gff file')
-    parser_test.set_defaults(func=test)
-
-
     # ------------ #
     # grp2TssTable #
     # ------------ #
@@ -417,6 +882,17 @@ def main():
                                            help='convert input grp file (aggregated by grptools) into TSS table')
     parser_grp2tss.add_argument('dRNA_grp', help='input grp file from dRNA-Seq')
     parser_grp2tss.set_defaults(func=grp2TssTable)
+
+
+    # -------- #
+    # classify #
+    # -------- #
+    parser_classify = subparsers.add_parser('classify', parents=[parent_parser],
+                                            help='add TSS classification into TSS table')
+    parser_classify.add_argument('tssTable', help='input TSS table generated by grp2TssTable')
+    parser_classify.add_argument('gffFile', help='input gff file')
+    parser_classify.add_argument('grpFile', help='input grp file')
+    parser_classify.set_defaults(func=classify)
 
 
     # ----------------------- #
