@@ -1,0 +1,439 @@
+#!/usr/bin/env python
+
+
+# Copyright (C) 2016  Shengwei Hou
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+import sys
+import os
+import re
+import urllib
+import argparse
+import subprocess
+from Bio import SeqIO
+import numpy as np
+from collections import Counter
+from itertools import izip
+from grptools import _read_grp, _group_tss, _get_ncol
+
+
+class BaseGffRecord(object):
+    """ This is the base class of GFF record, all the other GFF record types should be
+        inherited from this base GFF Record
+    """
+
+    id2records = {} # store all the recordID:gffObj
+
+    def __init__(self, seqname, source, feature, start, end, score, strand, frame, attribute):
+        """ Initialize a BaseGffRecord object, use standard GFF format specification.
+        """
+        self.seqname = seqname
+        self.source = source
+        self.feature = feature
+        self.start = int(start)
+        self.end = int(end)
+        self.score = str(score)
+        self.strand = strand
+        self.frame = str(frame)
+        self.attribute = attribute
+        self.attribute_dict = self._get_attribute_dict()
+
+        # add this gff record to id2records dict
+        BaseGffRecord.id2records.update({self.get_subattribute('ID'): self})
+
+
+    def _get_attribute_dict(self):
+        attribute_dict = {}
+        attri_list = self.attribute.strip().split(";")
+        # need to tackle with "note=codon recognized: UUG; tRNA-Leu (CAA);"
+        last_k, last_v = None, None
+        for attr in attri_list:
+            split_list = attr.strip().split("=")
+            if len(split_list) == 2:
+                if split_list[1] == '':
+                    split_list[1] = 'None'
+                k = urllib.unquote(split_list[0])
+                v = urllib.unquote(split_list[1])
+                attribute_dict.update({k:v})
+                last_k, last_v = k, v
+            else:
+                assert len(split_list) == 1, "Attribute was not associated with a key, try to rescure!"
+                if last_k:
+                    attribute_dict[last_k] += ","+urllib.unquote(split_list[0])
+                else:
+                    raise Exception("No Key was found for this attribute %s!"%split_list[0])
+        return attribute_dict
+
+    def get_subattribute(self, subattribute):
+        subattr = self.attribute_dict.get(subattribute, None)
+        return subattr
+
+    def set_subattribute(self, subattribute, value):
+        if self.attribute_dict.has_key(subattribute):
+            self.attribute_dict[subattribute] = value
+        else:
+            self.attribute_dict.update({subattribute:value})
+        # once set new value, should change self.attribute and self.attribute_dict
+        self.attribute = ""
+        self.attribute += "ID="+self.attribute_dict["ID"]+";"
+        self.attribute += "Name="+self.attribute_dict["Name"]+";"
+        for k, v in self.attribute_dict.iteritems():
+            if k in ("ID", "Name"):
+                continue
+            else:
+                self.attribute += k+"="+v+";"
+        self.attribute = self.attribute.rstrip(";")
+        # update self.attribute_dict
+        self.attribute_dict = self._get_attribute_dict()
+
+    def __str__(self):
+        return self.seqname+"\t"+self.source+"\t"+self.feature+"\t"+\
+               str(self.start)+"\t"+str(self.end)+"\t"+self.score+"\t"+\
+               self.strand+"\t"+self.frame+"\t"+self.attribute+"\n"
+
+
+class Gene(BaseGffRecord):
+    """Gene records have children"""
+
+    id2genes = {} # store all the geneID:geneObj
+
+    def __init__(self, seqname, source, feature, start, end, score, strand, frame, attribute):
+        self.childrenID = []
+        self.children = []
+        super(Gene, self).__init__(seqname, source, feature, start, end, score, strand, frame, attribute)
+
+        # add this gene to id2genes dict
+        Gene.id2genes.update({self.get_subattribute('ID'):self})
+
+    def add_child(self, child):
+        if isinstance(child, BaseGffRecord):
+            self.children.append(child)
+            self.childrenID.append(child.ID)
+        else:
+            print "Child should be GffRecord instance !"
+
+
+    def add_childID(self, childID):
+        self.childrenID.append(childID)
+        if childID in BaseGffRecord.id2records:
+            self.children.append(BaseGffRecord.id2records[childID])
+
+    def get_children(self, id2records):
+        children = []
+        for _id in self.childrenID:
+            try:
+                child = id2records[_id]
+            except KeyError as e:
+                print "ERROR: child with id %s was not found in the gff file"%_id
+                raise Exception("child id wasn't found!")
+            children.append(child)
+        return children
+
+    def get_product(self):
+        """try to return gene's product first, if failed, then children's product"""
+        product = self.get_subattribute('product', None)
+        if not product:
+            product = self.children[0].attributes.get("product", None)
+        return product
+
+class Region(BaseGffRecord):
+    """Region records"""
+
+class CDS(BaseGffRecord):
+    """CDS records"""
+
+class tRNA(BaseGffRecord):
+    """tRNA records"""
+
+class rRNA(BaseGffRecord):
+    """rRNA records"""
+
+class tmRNA(BaseGffRecord):
+    """tmRNA records"""
+
+class misc_RNA(BaseGffRecord):
+    """misc_RNA records"""
+
+class ncRNA(BaseGffRecord):
+    """ncRNA"""
+
+class repeat_Region(BaseGffRecord):
+    """repeat_region"""
+
+class Transcript(BaseGffRecord):
+    """transcript"""
+
+class Exon(BaseGffRecord):
+    """exon"""
+
+class GffRecordParser(object):
+    """ This class used to parse gff3 file, to generate BaseGffRecord instances
+    """
+    # constructors to initialize gff instances
+    constructors = {'region':Region,
+                    'gene':Gene,
+                    'cds':CDS,
+                    'trna':tRNA,
+                    'rrna':rRNA,
+                    'tmrna':tmRNA,
+                    'misc_rna':misc_RNA,
+                    'ncrna':ncRNA,
+                    'repeat_region':repeat_Region,
+                    'transcript':Transcript,
+                    'exon':Exon
+                    }
+
+    def __init__(self, handle_or_fileStr):
+        self.handle = handle_or_fileStr
+        self.genome_info = None
+
+    def _line_parser(self):
+        # judge file opened or not
+        if not hasattr(self.handle, "read"):
+            handle = open(self.handle, "r")
+        else:
+            handle = self.handle
+
+        while True:
+            line = handle.readline()
+
+            if not line:
+                # close file handle
+                try:
+                    handle.close()
+                except Exception as e:
+                    print e
+                break
+
+            else:
+                if line.startswith("#"):
+                    continue
+                else:
+                    gff_line_list = line.strip().split("\t")
+                    feature = gff_line_list[2].lower()
+                    constructor = GffRecordParser.constructors.get(feature, None)
+                    if constructor is None:
+                        print "No constructor was found for feature: %s, use BaseGffRecord instead."%feature
+                        constructor = BaseGffRecord
+
+                    gff_record = constructor(*gff_line_list)
+                    yield gff_record
+
+    def __iter__(self):
+        return self._line_parser()
+
+
+
+
+
+class TSS():
+
+    fwd_pos2tss = {} # {position:TSS}
+    rev_pos2tss = {} # {position:TSS}
+
+    def __init__(self, pos, strand, tss, cov):
+        self.pos = pos
+        self.ID = self.pos
+        self.Name = None
+        self.strand = strand
+        self.tss = tss
+        self.cov = cov
+        # here if no cov, then we assume this should not be a tss, set ratio to 0
+        self.ratio = 0 if self.cov == 0 else self.tss/float(self.cov) # tss/cov
+        self.locTssEnrich = None       # (upstream+TSS)/(upstream+TSS+downstream), the more sharp in up and down, the more like to be TSS
+        self.locCovEnrich = None       # downstream/(upstream+downstream), the more adjacent to 1, the more steep after this TSS, the more likely
+        self.type = None
+        self.currentGene = None      # which gene tss locates in current strand
+        self.downstreamGene = None   # gene downstream of tss in current strand
+        self.antiNearestGene = None  # nearest gene in anti strand
+        self.description = None
+        self.product = None
+        self.merged_cov_region = None    # a tuple represent the start and end pos of merged coverage region, will be used in gTSS_check
+        self.attribute = ""
+        self.attribute_dict = {}
+
+        # update this TSS instance to pos2tss
+        if self.strand == "+":
+            TSS.fwd_pos2tss.update({self.pos:self})
+        else:
+            assert self.strand == "-", "TSS strand should be + or - !"
+            TSS.rev_pos2tss.update(({self.pos:self}))
+
+    def update_ID(self):
+        if self.type != None:
+            self.ID = self.type + self.strand + str(self.pos+1)
+
+    def _replaceNone(self, item):
+        if item == None:
+            return "None"
+        else:
+            return str(item)
+
+    def _get_Name(self, item):
+        try:
+            name = item.Name
+        except Exception as e:
+            name = "None"
+        return name
+
+    def _get_Locus_tag(self, item):
+        try:
+            locus_tag = item.locus_tag
+        except Exception as e:
+            locus_tag = "None"
+        return locus_tag
+
+    def get_subattribute(self, subattribute):
+        subattr = self.attribute_dict.get(subattribute, None)
+        return subattr
+
+    def update_attribute(self):
+        self.attribute = ""
+        self.attribute += "ID=" + self.attribute_dict["ID"] + ";"
+        self.attribute += "Name=" + self.attribute_dict["Name"] + ";"
+        for k, v in self.attribute_dict.iteritems():
+            if k in ("ID", "Name"):
+                continue
+            else:
+                self.attribute += k + "=" + v + ";"
+        self.attribute = self.attribute.rstrip(";")
+
+    def set_subattribute(self, subattribute, value):
+        if self.attribute_dict.has_key(subattribute):
+            self.attribute_dict[subattribute] = value
+        else:
+            self.attribute_dict.update({subattribute: value})
+        # once set new value, should change self.attribute and self.attribute_dict
+        self.update_attribute()
+
+    def __str__(self):
+        return self.ID + "\t" + str(self.tss) + "\t" + self.type + "\t" + \
+               str(self.pos+1) + "\t" + str(self.pos+1) + "\t" + self._replaceNone(self.description) \
+               + "\t" + self.strand + "\t" + self._replaceNone(self.product) + "\t" + self.attribute + "\n"
+
+
+
+def read_gff(input_gff):
+    gff_records = GffRecordParser(input_gff)
+    for gff in gff_records:
+        print "Input GFF record:", gff
+        print "Input GFF feature:", gff.feature
+        print "--------------------\n"
+
+    print BaseGffRecord.id2records.keys()
+
+def test(args):
+    read_gff(args.gff)
+
+
+
+def grp2TssTable(args):
+    """parse grp file (should be aggregated by grptools), write out TSS table in the following format
+
+    #1-based_Pos strand tss cov
+    82944 + 100 150
+    82949 + 15 180
+    ...
+
+    """
+    dRNA_grp = args.dRNA_grp
+    prefix = args.prefix
+
+    if prefix:
+        outfile = prefix + "_tss.tab"
+    else:
+        basename = os.path.basename(dRNA_grp)
+        filestem = os.path.splitext(basename)[0]
+        outfile = filestem + "_tss.tab"
+
+    headers, arrays = _read_grp(dRNA_grp)
+    assert len(arrays) == 4, "Input grp file should have coverage and tss info for both strands, please check again!"
+
+    with open(outfile, "w") as oh:
+        oh.write("#1-based_Pos\tstrand\ttss\tcov\n")
+        fwd_cov, fwd_tss, rev_cov, rev_tss = arrays
+        for i, (cov, tss) in enumerate(zip(fwd_cov, fwd_tss)):
+            if tss > 0:
+                oh.write(str(i+1) +"\t+"+"\t"+str(tss)+"\t"+str(cov)+"\n")
+        for i, (cov, tss) in enumerate(zip(rev_cov, rev_tss)):
+            if tss > 0:
+                oh.write(str(i + 1) + "\t+" + "\t" + str(tss) + "\t" + str(cov) + "\n")
+
+
+
+def predict(args):
+    pass
+
+
+def main():
+
+    # main parser
+    parser = argparse.ArgumentParser(description="A set of subcommands for TSS prediction and annotation")
+    parser.add_argument("-v", "--version", action="version", version="%(prog)s 1.0")
+
+    # parent parser, to specify shared arguments, inherited by subparsers
+    parent_parser = argparse.ArgumentParser(add_help=False)
+    parent_parser.add_argument("-p", "--prefix", required=False, help="output prefix for grp file")
+
+
+    # subparsers
+    subparsers = parser.add_subparsers(help='available subcommands')
+
+
+    # ------- #
+    # predict #
+    # ------- #
+    parser_predict = subparsers.add_parser('predict', parents=[parent_parser],
+                                           help='predict tss based on given grp files')
+    parser_predict.add_argument('dRNA_grp', help='input grp file from dRNA-Seq')
+    parser_predict.add_argument('-r', '--RNA_grp', help='input grp file from RNA-Seq')
+    parser_predict.set_defaults(func=predict)
+
+
+    # ---- #
+    # test #
+    # -----#
+    parser_test = subparsers.add_parser('test', parents=[parent_parser], help='test')
+    parser_test.add_argument('gff', help='input gff file')
+    parser_test.set_defaults(func=test)
+
+
+    # ------------ #
+    # grp2TssTable #
+    # ------------ #
+    parser_grp2tss = subparsers.add_parser('grp2TssTable', parents=[parent_parser],
+                                           help='convert input grp file (aggregated by grptools) into TSS table')
+    parser_grp2tss.add_argument('dRNA_grp', help='input grp file from dRNA-Seq')
+    parser_grp2tss.set_defaults(func=grp2TssTable)
+
+
+    # ----------------------- #
+    # parse arguments and run #
+    # ----------------------- #
+
+    # display help
+    if len(sys.argv) == 1:
+        print parser.format_help()
+        sys.exit(1)
+
+    # parse args
+    args = parser.parse_args()
+
+    # run commands
+    args.func(args)
+
+
+if __name__ == "__main__":
+    main()
