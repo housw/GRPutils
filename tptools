@@ -22,11 +22,16 @@ import re
 import urllib
 import argparse
 import subprocess
+import Bio
+from Bio.Seq import Seq
 from Bio import SeqIO
+from Bio import motifs
+from Bio.Alphabet import IUPAC
 import numpy as np
 from collections import Counter
 from itertools import izip
 from grptools import _read_grp, _group_tss, _get_ncol
+
 
 
 class BaseGffRecord(object):
@@ -98,9 +103,10 @@ class BaseGffRecord(object):
         # update self.attribute_dict
         self.attribute_dict = self._get_attribute_dict()
 
-    def update_hierarchical_relationships(self):
+    @staticmethod
+    def update_hierarchical_relationships():
         for ID, gff in BaseGffRecord.id2records.iteritems():
-            parentID = gff.get_subattribute('parent')
+            parentID = gff.get_subattribute('Parent')
             if parentID:
                 parent = BaseGffRecord.id2records[parentID]
                 parent.add_child(gff)
@@ -119,9 +125,10 @@ class Gene(BaseGffRecord):
 
     def __init__(self, seqname, source, feature, start, end, score, strand, frame, attribute):
         self.children = []
+        self.Name = None
+        self.product = None
         super(Gene, self).__init__(seqname, source, feature, start, end, score, strand, frame, attribute)
-        self.Name = self.get_Name()
-        self.product = self.get_product()
+
 
         # add this gene to id2genes dict
         Gene.id2genes.update({self.get_subattribute('ID'):self})
@@ -135,18 +142,23 @@ class Gene(BaseGffRecord):
     def get_children(self, id2records):
         return self.children
 
-    def get_Name(self):
+    def _get_Name(self):
         name = self.get_subattribute('Name')
         if not name:
             name = self.get_subattribute('locus_tag')
         return name
 
-    def get_product(self):
+    def _get_product(self):
         """try to return gene's product first, if failed, then children's product"""
         product = self.get_subattribute('product')
         if not product and self.children:
-            product = self.children[0].attributes.get("product", None)
+            product = self.children[0].get_subattribute("product")
         return product
+
+    def update(self):
+        self.Name = self._get_Name()
+        self.product = self._get_product()
+
 
 class Region(BaseGffRecord):
     """Region records"""
@@ -284,31 +296,286 @@ class GffRecordParser(object):
 
 
 
+class TATA(object):
+    """
+                                          -8/-4
+             Pribnow box          5'-TATAAT-3'--TSS  Prokayrotic
+             TATA box             5'-TATAAT-3'--TSS  Eukaryotic
+                                          -27/-21
+                                     -36/-20
+
+    """
+
+    scoreMatrix = {"AA":1, "AT":0, "AG":0, "AC":0,
+                   "TA":0, "TT":1, "TG":0, "TC":0,
+                   "GA":0, "GT":0, "GG":1, "GC":0,
+                   "CA":0, "CT":0, "CG":0, "CC":1}
+
+    naive_tata_box = []
+
+    def __init__(self, tss, seq, strand, genomePos, relativePos):
+        self.tss = tss
+        self.seq =seq
+        self.strand = strand
+        self.genomePos = genomePos
+        self.relativePos = relativePos
+
+    def __str__(self):
+        """ here we need to convert the 0-based coordinate to 1-based coordinate
+        """
+        return self.tss.ID +"\t"+self.seq+"\t"+self.strand+"\t"+str(self.genomePos+1)+"\t"+str(self.relativePos+1)+"\n"
+
+    @classmethod
+    def get_genome_gc_content(cls, input_genome_fna):
+        """
+        :param input_genome_fna: the genome fasta file
+        :return: gc content and gc_dict
+        """
+
+        GC_dict = {"A": 0, "T": 0, "C": 0, "G": 0}
+
+        # if not a open handle, open it for read
+        if not hasattr(input_genome_fna, 'read'):
+            input_genome_fna = open(input_genome_fna, "r")
+
+        for line in input_genome_fna:
+            if line.startswith(">"):
+                continue
+            for char in line:
+                char = char.upper()
+                if char in GC_dict:
+                    GC_dict[char] += 1
+
+        # if not closed, close it
+        if not input_genome_fna.closed:
+            input_genome_fna.close()
+
+        total_chars = sum([v for v in GC_dict.values()])
+        total_GC = sum([v for k, v in GC_dict.items() if k in {'G', 'C'}])
+
+        # calculate normalized gc_dict
+        nucl_dict = {k: v / float(total_chars) for k, v in GC_dict.iteritems()}
+
+        # calculate GC content
+        gc_cont = float(total_GC) / total_chars
+
+        return (gc_cont, nucl_dict)
+
+
+    @classmethod
+    def get_naive_tata_box_sequences(cls, total_tss, genomeSeq, init_cutoff = 200, startPos=-14, centroid = -10,
+                                     querySeq="TATAAT", min_match=3):
+        for tss in total_tss:
+            if tss.tss >= init_cutoff:
+                seq = cls.get_naive_single_TATA_seq(tss, genomeSeq, startPos, querySeq, centroid, min_match)
+                #print seq
+                if seq:
+                    tss.set_subattribute('TATA', str(seq.seq).upper())
+                    cls.naive_tata_box.append(seq)
+
+
+    @classmethod
+    def get_naive_single_TATA_seq(cls, tss, genomeSeq, startPos, querySeq, centroid, min_match):
+        """ this function will take tss and genomeSeq as input, find the best-matched
+            querySeq in the region of -15 to 0 upstream of TSS, and return the matched
+            sequence, with a minimum cutoff that the naive matched score is more than 3.
+        """
+        # get sequence of -15 ~ 0, upstream of TSS
+        if tss.strand == "+":
+            targetSeq = genomeSeq[tss.idx+startPos:tss.idx]
+        else:
+            assert tss.strand == "-", "tss strand should be -, not %s!"%tss.strand
+            targetSeq = genomeSeq[tss.idx:tss.idx-startPos].reverse_complement()
+
+        targetSeq = targetSeq.upper()
+        if "N" in targetSeq:
+            bestMatch = None
+            return bestMatch
+
+        # scan the targetSeq, to find best 6-mer TATA matches
+        bestScore = -1
+        bestMatch = None
+        relativePos = 0
+        for i in range(0, len(targetSeq)-len(querySeq)):
+            tmpSeq = targetSeq[i:i+6]
+            tmpScore = sum(cls.scoreMatrix[item] for item in [x[0]+x[1] for x in zip(tmpSeq, querySeq)])
+            tmpRelativePos = -1*(len(targetSeq) - i)
+            # only take at least min_match matched nucleotides as naive TATA sequence
+            if not tmpScore >=min_match:
+                continue
+            if tmpScore > bestScore:
+                bestScore = tmpScore
+                bestMatch = tmpSeq
+                relativePos = tmpRelativePos
+            elif tmpScore == bestScore:
+                # when tmpScore is equal to bestScore, then only if it closer to -10.5 will count
+                if abs(tmpRelativePos) - (-1*centroid) < relativePos -(-1*centroid):
+                    bestScore = tmpScore
+                    bestMatch = tmpSeq
+                    relativePos = tmpRelativePos
+                else:
+                    continue
+
+        return bestMatch
+
+
+def get_naive_TATA_instances(input_tss, cutoff=200):
+    """
+    :param cutoff:  tss cutoff for naive tata sequence
+    :return: a list of naive tata sequences
+    """
+    tss_dict = {} # {tss_ID:tss_promoterSeq}
+
+    # parse TSS file
+    tss_file = parse_tssFile(input_tss)
+    for tss in tss_file:
+        if tss.tss >= cutoff:
+            naive_TATA = tss.get_subattribute('TATA')
+
+            if naive_TATA != "None" and naive_TATA is not None:
+                naive_TATA = Seq(naive_TATA)
+            else:
+                continue
+
+            if tss.ID not in tss_dict:
+                tss_dict.update({tss.ID:naive_TATA})
+            else:
+                continue
+
+    print "Totally %d naive TATA sequences with cutoff %.2f"%(len(tss_dict), cutoff)
+
+    return tss_dict.values()
+
+
+
+def create_motif_from_instances(input_instances, background):
+    """
+    :param input_instances: a list of Seq instances with same length
+    :return:
+    """
+
+    # create a Motif instance
+    if len(input_instances) >0 and isinstance(input_instances[0], Bio.SeqRecord.SeqRecord):
+        input_instances = [str(seq.seq) for seq in input_instances]
+    m = motifs.create(input_instances)
+    #print m
+    #print m.counts
+    #print m.consensus
+
+    # create a position-weight matrix, using background as peuducounts
+    pwm = m.counts.normalize(pseudocounts=background)
+    #print pwm
+
+    # position-specific scoring matrices
+    pssm = pwm.log_odds(background)
+    #print pssm
+    mean = pssm.mean(background)
+    std = pssm.std(background)
+    #print mean, std
+
+    return pssm
+
+
+
+def get_refined_tata_instances(naive_pssm, total_tss, background, cutoff):
+    """
+    :param pssm:         position-specific scoring matrices
+    :param input_tss:    input tss file
+    :param background:   genome atcg content
+    :return:
+    """
+    # get the naive pssm distribution and threshold, use false-positive rate: fpr=0.05
+    naive_distribution = naive_pssm.distribution(background=background, precision=10**4)
+    threshold = naive_distribution.threshold_fpr(0.05)
+
+    # get all refined instances
+    refined_TATA_instances = [] # collect all refined TATA instances
+
+    for tss in total_tss:
+        if tss.tss >= cutoff:
+            PromoterSeq = tss.get_subattribute('PromoterSeq')
+            # only cut region -14 to -4 to search refined TATA seq
+            PromoterSeq = Seq(PromoterSeq[-14:-4].upper(), alphabet=IUPAC.unambiguous_dna)
+            #print naive_pssm.alphabet
+
+            if 'N' not in PromoterSeq:
+                best_position = -1
+                best_score = -1
+                for position, score in naive_pssm.search(PromoterSeq, threshold):
+                    if score > best_score and position > 0:
+                        best_position = position
+                        best_score = score
+
+                if best_position > 0:
+                    #print "Best position %d: Best score = %5.3f" % (best_position, best_score)
+                    #print PromoterSeq
+                    refined_TATA = PromoterSeq[best_position:best_position+len(naive_pssm['A'])]
+                    refined_TATA_instances.append(refined_TATA)
+
+    return refined_TATA_instances
+
+
+
+def scoring_tss_probability(refined_pssm, total_tss, background):
+    """
+    :param refined_pssm: pssm refined from init_cutoff
+    :param total_tss:    all tss in a list
+    :param background:   nucl_dict
+    :return:
+    """
+
+    refined_distribution = refined_pssm.distribution(background=background, precision=10**4)
+    threshold = refined_distribution.threshold_fpr(0.05)
+
+
+    for tss in total_tss:
+        PromoterSeq = tss.get_subattribute('PromoterSeq')
+
+        # only cut region -14 to -4 to search refined TATA seq
+        PromoterSeq = Seq(PromoterSeq[-14:-4].upper(), alphabet=IUPAC.unambiguous_dna)
+        #print naive_pssm.alphabet
+
+        if 'N' not in PromoterSeq:
+            best_position = -1
+            best_score = -1
+            for position, score in refined_pssm.search(PromoterSeq, threshold=refined_pssm.min):
+                if score > best_score and position > 0:
+                    best_position = position
+                    best_score = score
+
+            if best_position > 0:
+                #print "Best position %d: Best score = %5.3f" % (best_position, best_score)
+                #print PromoterSeq
+                best_TATA = PromoterSeq[best_position:best_position+len(refined_pssm['A'])]
+                tss.set_subattribute('TATA', str(best_TATA))
+                tss.set_subattribute('TATA_log_odds', str(best_score))
+
+
+
 class TSS():
 
     fwd_pos2tss = {} # {position:TSS}
     rev_pos2tss = {} # {position:TSS}
 
-    def __init__(self, idx, strand, tss, cov):
+    def __init__(self, idx, strand, tss, cov=None):
         self.ID = None
-        self.Name = self.ID
         self.idx = idx
         self.strand = strand
         self.tss = float(tss)
-        self.cov = float(cov)
+        self.cov = 0 if cov is None else float(cov)
         # here if no cov, then we assume this should not be a tss, set ratio to 0
-        self.ratio = 0 if self.cov == 0 else self.tss/self.cov # tss/cov
-        self.locTssEnrich = None       # (upstream+TSS)/(upstream+TSS+downstream), the more sharp in up and down, the more like to be TSS
-        self.locCovEnrich = None       # downstream/(upstream+downstream), the more adjacent to 1, the more steep after this TSS, the more likely
+        self.TssCovRatio = 0 if self.cov == 0 else self.tss/self.cov # tss/cov
+        self.LocalTssEnrichmentScore = None       # (upstream+TSS)/(upstream+TSS+downstream), the more sharp in up and down, the more like to be TSS
+        self.LocalCoverageEnrichmentScore = None       # downstream/(upstream+downstream), the more adjacent to 1, the more steep after this TSS, the more likely
         self.type = None
-        self.currentGene = None      # which gene tss locates in current strand
-        self.downstreamGene = None   # gene downstream of tss in current strand
-        self.antiNearestGene = None  # nearest gene in anti strand
+        self.CurrentGene = None      # which gene tss locates in current strand
+        self.DownstreamGene = None   # gene downstream of tss in current strand
+        self.NearestAntiStrandGene = None  # nearest gene in anti strand
         self.description = None
         self.product = None
         self.merged_cov_region = None    # a tuple represent the start and end pos of merged coverage region, will be used in gTSS_check
-        self.attribute = ""
-        self.attribute_dict = {}
+        self.attribute=None
+        self.attribute_dict = None
 
         # update this TSS instance to pos2tss
         if self.strand == "+":
@@ -316,10 +583,6 @@ class TSS():
         else:
             assert self.strand == "-", "TSS strand should be + or - !"
             TSS.rev_pos2tss.update(({self.idx:self}))
-
-    def update_ID(self):
-        if self.type is not None:
-            self.ID = self.type + self.strand + str(self.idx+1)
 
     def _replaceNone(self, item):
         if item is None:
@@ -336,16 +599,53 @@ class TSS():
 
     def _get_Locus_tag(self, item):
         try:
-            locus_tag = item.locus_tag
+            locus_tag = item.get_subattribute('locus_tag')
         except Exception as e:
             locus_tag = "None"
         return locus_tag
 
-    def get_subattribute(self, subattribute):
-        subattr = self.attribute_dict.get(subattribute, None)
-        return subattr
+    def set_attribute_dict_from_string(self, attributeString):
+        self.attribute = attributeString
+        attribute_dict = {}
+        attri_list = self.attribute.strip().split(";")
+        # need to tackle with "note=codon recognized: UUG; tRNA-Leu (CAA);"
+        last_k, last_v = None, None
+        for attr in attri_list:
+            split_list = attr.strip().split("=")
+            if len(split_list) == 2:
+                if split_list[1] == '':
+                    split_list[1] = 'None'
+                k = urllib.unquote(split_list[0])
+                v = urllib.unquote(split_list[1])
+                attribute_dict.update({k: v})
+                last_k, last_v = k, v
+            else:
+                assert len(split_list) == 1, "Attribute was not associated with a key, try to rescure!"
+                if last_k:
+                    attribute_dict[last_k] += "," + urllib.unquote(split_list[0])
+                else:
+                    raise Exception("No Key was found for this attribute %s!" % split_list[0])
+        self.attribute_dict = attribute_dict
 
-    def update_attribute(self):
+
+    def update_attribute_dict(self):
+
+        # update ID
+        if self.type is not None:
+            self.ID = self.type + self.strand + str(self.idx+1)
+
+        # update attribute dict
+        self.attribute_dict = {}
+        self.attribute_dict.update({'ID':self.ID, 'Name':self.ID,
+                                   'LocalTssEnrichmentScore':'%.2f'%float(self.LocalTssEnrichmentScore),
+                                   'LocalCoverageEnrichmentScore':'%.2f'%float(self.LocalCoverageEnrichmentScore),
+                                   'TssCovRatio':'%.2f'%float(self.TssCovRatio),
+                                   'CurrentGene': self._get_Name(self.CurrentGene),
+                                   'DownstreamGene':self._get_Name(self.DownstreamGene),
+                                   'NearestAntiStrandGene':self._get_Name(self.NearestAntiStrandGene),
+                                   'DownstreamGeneLocusTag':self._get_Locus_tag(self.DownstreamGene)
+                                   })
+        # update attribute
         self.attribute = ""
         self.attribute += "ID=" + self.attribute_dict["ID"] + ";"
         self.attribute += "Name=" + self.attribute_dict["Name"] + ";"
@@ -356,18 +656,32 @@ class TSS():
                 self.attribute += k + "=" + v + ";"
         self.attribute = self.attribute.rstrip(";")
 
+    def get_subattribute(self, subattribute):
+        subattr = self.attribute_dict.get(subattribute, None)
+        return subattr
+
     def set_subattribute(self, subattribute, value):
         if self.attribute_dict.has_key(subattribute):
             self.attribute_dict[subattribute] = value
         else:
             self.attribute_dict.update({subattribute: value})
         # once set new value, should change self.attribute and self.attribute_dict
-        self.update_attribute()
+        self.attribute = ""
+        self.attribute += "ID=" + self.attribute_dict["ID"] + ";"
+        self.attribute += "Name=" + self.attribute_dict["Name"] + ";"
+        for k, v in self.attribute_dict.iteritems():
+            if k in ("ID", "Name"):
+                continue
+            else:
+                self.attribute += k + "=" + v + ";"
+        self.attribute = self.attribute.rstrip(";")
 
     def __str__(self):
-        return self.ID + "\t" + str(self.tss) + "\t" + self.type + "\t" + \
-               str(self.idx+1) + "\t" + str(self.idx+1) + "\t" + self._replaceNone(self.description) \
-               + "\t" + self.strand + "\t" + self._replaceNone(self.product) + "\t" + self.attribute + "\n"
+        return self.ID + "\t" + str(self.tss) + "\t" + self.type + "\t" + str(self.idx + 1) + "\t" + \
+               str(self.idx + 1) + "\t" + self._replaceNone(self.description) + "\t" + \
+               self.strand + "\t" + self._replaceNone(self.product) + "\t" + self.attribute
+
+
 
 
 def _calculate_local_TSS_enrichment_score(idx, strand, tss_arr, length=100):
@@ -462,7 +776,7 @@ def grp2TssTable(args):
     assert len(arrays) == 4, "Input grp file should have coverage and tss info for both strands, please check again!"
 
     with open(outfile, "w") as oh:
-        oh.write("#1-based_Pos\tstrand\ttss\tcov\tratio\tlocCovEnrich\tlocTssEnrich\n")
+        oh.write("#1-based_Pos\tstrand\ttss\tcov\tTssCovRatio\tLocalCoverageEnrichmentScore\tLocalTssEnrichmentScore\n")
         fwd_cov, fwd_tss, rev_cov, rev_tss = arrays
         for i, (cov, tss) in enumerate(zip(fwd_cov, fwd_tss)):
             if tss > 0:
@@ -470,20 +784,20 @@ def grp2TssTable(args):
                 pos = idx + 1
                 if tss > cov:
                     tss = cov
-                ratio = tss/cov
+                TssCovRatio = tss/cov
                 lces = _calculate_local_cov_enrichment_score(idx,"+", fwd_cov, 10)
                 ltes = _calculate_local_TSS_enrichment_score(idx, "+", fwd_tss, 100)
-                oh.write(str(idx) +"\t+"+"\t"+str(tss)+"\t"+str(cov)+"\t%.2f"%ratio+"\t%.2f"%lces+"\t%.2f"%ltes+"\n")
+                oh.write(str(idx) +"\t+"+"\t"+str(tss)+"\t"+str(cov)+"\t%.2f"%TssCovRatio+"\t%.2f"%lces+"\t%.2f"%ltes+"\n")
         for i, (cov, tss) in enumerate(zip(rev_cov, rev_tss)):
             if tss > 0:
                 idx = i
                 pos = idx + 1
                 if tss > cov:
                     tss = cov
-                ratio = tss/cov
+                TssCovRatio = tss/cov
                 lces = _calculate_local_cov_enrichment_score(idx,"-", rev_cov, 10)
                 ltes = _calculate_local_TSS_enrichment_score(idx, "-", rev_tss, 100)
-                oh.write(str(idx) +"\t+"+"\t"+str(tss)+"\t"+str(cov)+"\t%.2f"%ratio+"\t%.2f"%lces+"\t%.2f"%ltes+"\n")
+                oh.write(str(idx) +"\t-"+"\t"+str(tss)+"\t"+str(cov)+"\t%.2f"%TssCovRatio+"\t%.2f"%lces+"\t%.2f"%ltes+"\n")
 
 
 def _get_gene_dict_from_gff(gff_file):
@@ -518,6 +832,14 @@ def _get_gene_dict_from_gff(gff_file):
                     else:
                         # if two rev gene overlap, assign this idx to formmer one
                         continue
+
+    # update GFF relationships
+    BaseGffRecord.update_hierarchical_relationships()
+    # update Gene's Name and product
+    for gene in fwd_gene_starts_dict.values():
+        gene.update()
+    for gene in rev_gene_starts_dict.values():
+        gene.update()
 
     return fwd_gene_dict, rev_gene_dict, fwd_gene_starts_dict, rev_gene_starts_dict
 
@@ -560,207 +882,235 @@ def find_nearest_gene(tss, fwd_gene_dict, rev_gene_dict, fwd_gene_starts_dict,
 
     # fwd tss
     if strand == "+":
-        # update currentGene
-        currentGene = fwd_gene_dict.get(idx, None)
-        tss.currentGene = currentGene
+        # update CurrentGene
+        CurrentGene = fwd_gene_dict.get(idx, None)
+        tss.CurrentGene = CurrentGene
 
         # check current idx if a start or not
         currentStart = fwd_gene_starts_dict.get(idx, None)
 
-        # update downstreamGene
-        if currentGene and not currentStart:
-            downstreamGene = getRight(currentGene.end, fwd_gene_dict, genome_length)
+        # update DownstreamGene
+        if CurrentGene and not currentStart:
+            DownstreamGene = getRight(CurrentGene.end, fwd_gene_dict, genome_length)
         else:
-            downstreamGene = getRight(idx, fwd_gene_dict, genome_length)
-        tss.downstreamGene = downstreamGene
+            DownstreamGene = getRight(idx, fwd_gene_dict, genome_length)
+        tss.DownstreamGene = DownstreamGene
 
-        # update antiNearestGene
+        # update NearestAntiStrandGene
         antiCurrent = rev_gene_dict.get(idx, None)
         if antiCurrent:
-            antiNearestGene = antiCurrent
+            NearestAntiStrandGene = antiCurrent
         else:
             antiLeft = getLeft(idx, rev_gene_dict)
             antiRight = getRight(idx, rev_gene_dict, genome_length)
             if antiLeft and antiRight:
                 if idx - (antiLeft.end-1) >= (antiRight.start-1) - idx:
-                    antiNearestGene = antiRight
+                    NearestAntiStrandGene = antiRight
                 else:
-                    antiNearestGene = antiLeft
+                    NearestAntiStrandGene = antiLeft
             else:
                 if antiLeft:
-                    antiNearestGene = antiLeft
+                    NearestAntiStrandGene = antiLeft
                 elif antiRight:
-                    antiNearestGene = antiRight
+                    NearestAntiStrandGene = antiRight
                 else:
-                    antiNearestGene = None
-        tss.antiNearestGene = antiNearestGene
+                    NearestAntiStrandGene = None
+        tss.NearestAntiStrandGene = NearestAntiStrandGene
 
     else:
         assert strand == "-", "strand should be +/-, not %s !"%strand
-        # update currentGene
-        currentGene = rev_gene_dict.get(idx, None)
-        tss.currentGene = currentGene
+        # update CurrentGene
+        CurrentGene = rev_gene_dict.get(idx, None)
+        tss.CurrentGene = CurrentGene
 
         # check current idx if a start or not
         currentStart = rev_gene_starts_dict.get(idx, None)
 
-        # update downstreamGene
-        if currentGene and not currentStart:
-            downstreamGene = getLeft(currentGene.start-2, rev_gene_dict)
+        # update DownstreamGene
+        if CurrentGene and not currentStart:
+            DownstreamGene = getLeft(CurrentGene.start-2, rev_gene_dict)
         else:
-            downstreamGene = getLeft(idx, rev_gene_dict)
-        tss.downstreamGene = downstreamGene
+            DownstreamGene = getLeft(idx, rev_gene_dict)
+        tss.DownstreamGene = DownstreamGene
 
-        # update antiNearestGene
+        # update NearestAntiStrandGene
         antiCurrent = fwd_gene_dict.get(idx, None)
         if antiCurrent:
-            antiNearestGene = antiCurrent
+            NearestAntiStrandGene = antiCurrent
         else:
             antiLeft = getLeft(idx, fwd_gene_dict)
             antiRight = getRight(idx, fwd_gene_dict, genome_length)
             if antiLeft and antiRight:
                 if idx - (antiLeft.end-1) >= (antiRight.start-1)-idx:
-                    antiNearestGene = antiRight
+                    NearestAntiStrandGene = antiRight
                 else:
-                    antiNearestGene = antiLeft
+                    NearestAntiStrandGene = antiLeft
             else:
                 if antiLeft:
-                    antiNearestGene = antiLeft
+                    NearestAntiStrandGene = antiLeft
                 elif antiRight:
-                    antiNearestGene = antiRight
+                    NearestAntiStrandGene = antiRight
                 else:
-                    antiNearestGene = None
-        tss.antiNearestGene = antiNearestGene
+                    NearestAntiStrandGene = None
+        tss.NearestAntiStrandGene = NearestAntiStrandGene
 
 
 def gTSS_check(tss):
     """ this function used to check gTSS
     """
-    downstreamGene = tss.downstreamGene
-    if downstreamGene:
+    DownstreamGene = tss.DownstreamGene
+    if DownstreamGene:
         # tss locates at fwd
         if tss.strand == "+":
-            downstream_dist = (downstreamGene.start-1)-tss.idx
+            downstream_dist = (DownstreamGene.start-1)-tss.idx
         # tss locates at rev
         else:
             assert tss.strand == "-", "tss strand should be +/- !"
-            downstream_dist = tss.idx - (downstreamGene.end-1)
+            downstream_dist = tss.idx - (DownstreamGene.end-1)
 
         # update tss type, description and product
         # gTSS, upstream of 200 nt
         if downstream_dist <= 200:
+
             tss.type = "gTSS"
             tss.description = "gTSS, %d bp upstream of gene %s."%\
-                            (downstream_dist, downstreamGene.Name)
-            tss.product = downstreamGene.product
+                              (downstream_dist, DownstreamGene.Name)
+
+            # if downstream gene encoding tRNA, rRNA, ncRNA, misc_RNA, tmRNA, change it to nTSS
+            if len(DownstreamGene.children) >=1:
+                child = DownstreamGene.children[0]
+                if child.feature in ['tRNA', 'rRNA', 'ncRNA', 'misc_RNA', 'tmRNA']:
+                    tss.type = 'nTSS'
+                    tss.description = "nTSS, %d bp upstream of gene %s." % \
+                                      (downstream_dist, DownstreamGene.Name)
+
+            tss.product = DownstreamGene.product
 
 
         # gTSS, more than 200nt, the merged coverage region around TSS overlaps with downstream gene,
         # and the overlaps more than 1/3 of the gene
         elif tss.merged_cov_region != None:
-            if tss.strand == "+" and abs(tss.merged_cov_region[1]) > downstreamGene.start:
-            #if tss.strand == "+" and abs(tss.merged_cov_region[1] - downstreamGene.start) > 0.333*abs(downstreamGene.start - downstreamGene.end):
+            if tss.strand == "+" and abs(tss.merged_cov_region[1]) > DownstreamGene.start:
+            #if tss.strand == "+" and abs(tss.merged_cov_region[1] - DownstreamGene.start) > 0.333*abs(DownstreamGene.start - DownstreamGene.end):
                 #print "One gTSS long than 200 nt found on fwd strand"
                 tss.type = "gTSS"
                 tss.description = "gTSS, %d bp upstream of gene %s."%\
-                                (downstream_dist, downstreamGene.Name)
-                tss.product = downstreamGene.product
-            elif tss.strand == "-" and tss.merged_cov_region[0] < downstreamGene.end:
-            #elif tss.strand == "-" and abs(tss.merged_cov_region[0] - downstreamGene.end) > 0.333*abs(downstreamGene.start-downstreamGene.end):
+                                (downstream_dist, DownstreamGene.Name)
+
+                # if downstream gene encoding tRNA, rRNA, ncRNA, misc_RNA, tmRNA, change it to nTSS
+                if len(DownstreamGene.children) >=1:
+                    child = DownstreamGene.children[0]
+                    if child.feature in ['tRNA', 'rRNA', 'ncRNA', 'misc_RNA', 'tmRNA']:
+                        tss.type = 'nTSS'
+                        tss.description = "nTSS, %d bp upstream of gene %s." % \
+                                          (downstream_dist, DownstreamGene.Name)
+
+                tss.product = DownstreamGene.product
+            elif tss.strand == "-" and tss.merged_cov_region[0] < DownstreamGene.end:
+            #elif tss.strand == "-" and abs(tss.merged_cov_region[0] - DownstreamGene.end) > 0.333*abs(DownstreamGene.start-DownstreamGene.end):
                 #print "One gTSS long than 200 nt found on rev strand"
                 tss.type = "gTSS"
                 tss.description = "gTSS, %d bp upstream of gene %s."%\
-                                (downstream_dist, downstreamGene.Name)
-                tss.product = downstreamGene.product
+                                (downstream_dist, DownstreamGene.Name)
+
+                # if downstream gene encoding tRNA, rRNA, ncRNA, misc_RNA, tmRNA, change it to nTSS
+                if len(DownstreamGene.children) >= 1:
+                    child = DownstreamGene.children[0]
+                    if child.feature in ['tRNA', 'rRNA', 'ncRNA', 'misc_RNA', 'tmRNA']:
+                        tss.type = 'nTSS'
+                        tss.description = "nTSS, %d bp upstream of gene %s." % \
+                                          (downstream_dist, DownstreamGene.Name)
+
+                tss.product = DownstreamGene.product
 
 
 def iTSS_check(tss):
     """ this function used to check iTSS
     """
-    currentGene = tss.currentGene
-    if currentGene:
+    CurrentGene = tss.CurrentGene
+    if CurrentGene:
         # tss locates at fwd
         if tss.strand == "+":
-            inside_dist = tss.idx - (currentGene.start-1)
+            inside_dist = tss.idx - (CurrentGene.start-1)
         # tss locates at rev
         else:
             assert tss.strand == "-", "tss strand should be +/- !"
-            inside_dist = currentGene.end-1 - tss.idx
+            inside_dist = CurrentGene.end-1 - tss.idx
         # update tss type, description and product
         tss.type = "iTSS"
         tss.description = "iTSS, %d bp inside of gene %s."%\
-                        (inside_dist, currentGene.Name)
-        tss.product = currentGene.product
+                        (inside_dist, CurrentGene.Name)
+        tss.product = CurrentGene.product
 
 
 def aTSS_check(tss):
     """ this function used to check aTSS
     """
-    antiNearestGene = tss.antiNearestGene
+    NearestAntiStrandGene = tss.NearestAntiStrandGene
 
     # antiRight
-    if antiNearestGene.start-1 > tss.idx:
-        anti_dist = (antiNearestGene.start-1) - tss.idx
+    if NearestAntiStrandGene.start-1 > tss.idx:
+        anti_dist = (NearestAntiStrandGene.start-1) - tss.idx
         if anti_dist <= 50:
             tss.type = "aTSS"
-            tss.product = antiNearestGene.product
+            tss.product = NearestAntiStrandGene.product
             if tss.strand == "+":
                 tss.description = "aTSS, %d bp downstream of reverse gene %s"%\
-                                            (anti_dist, antiNearestGene.Name)
+                                            (anti_dist, NearestAntiStrandGene.Name)
             else:
                 tss.description = "aTSS, %d bp upstream of forward gene %s"%\
-                                            (anti_dist, antiNearestGene.Name)
+                                            (anti_dist, NearestAntiStrandGene.Name)
 
     # antiLeft
-    elif antiNearestGene.end-1 < tss.idx:
-        anti_dist = tss.idx-(antiNearestGene.end-1)
+    elif NearestAntiStrandGene.end-1 < tss.idx:
+        anti_dist = tss.idx-(NearestAntiStrandGene.end-1)
         if anti_dist <= 50:
             tss.type = "aTSS"
-            tss.product = antiNearestGene.product
+            tss.product = NearestAntiStrandGene.product
             if tss.strand == "+":
                 tss.description = "aTSS, %d bp upstream of reverse gene %s"%\
-                                            (anti_dist, antiNearestGene.Name)
+                                            (anti_dist, NearestAntiStrandGene.Name)
             else:
                 tss.description = "aTSS, %d bp downstream of forward gene %s"%\
-                                            (anti_dist, antiNearestGene.Name)
+                                            (anti_dist, NearestAntiStrandGene.Name)
 
     # antiCurrent
     else:
         tss.type = "aTSS"
-        tss.product = antiNearestGene.product
+        tss.product = NearestAntiStrandGene.product
         if tss.strand == "+":
-            anti_dist = (antiNearestGene.end-1) - tss.idx
+            anti_dist = (NearestAntiStrandGene.end-1) - tss.idx
             tss.description = "aTSS, %d bp downstream of reverse gene %s"\
-                            %(anti_dist, antiNearestGene.Name)
+                            %(anti_dist, NearestAntiStrandGene.Name)
         else:
-            anti_dist = tss.idx - (antiNearestGene.start-1)
+            anti_dist = tss.idx - (NearestAntiStrandGene.start-1)
             tss.description = "aTSS, %d bp downstream of forward gene %s"\
-                            %(anti_dist, antiNearestGene.Name)
+                            %(anti_dist, NearestAntiStrandGene.Name)
 
 
 def nTSS_check(tss):
     """ this function used to check nTSS
     """
-    assert tss.currentGene == None, "currentGene exists, should not be nTSS !"
+    assert tss.CurrentGene == None, "CurrentGene exists, should not be nTSS !"
 
-    antiNearestGene, downstreamGene = tss.antiNearestGene, tss.downstreamGene
+    NearestAntiStrandGene, DownstreamGene = tss.NearestAntiStrandGene, tss.DownstreamGene
     # change to 1 based coordinate
     tss.description = "nTSS, at position %d on %s strand"%(tss.idx+1, tss.strand)
 
-    if downstreamGene:
+    if DownstreamGene:
         if tss.strand == "+":
-            assert (downstreamGene.start-1) - tss.idx > 200, "distance between tss\
-                and downstreamGene is less than 200, should not be nTSS !"
+            assert (DownstreamGene.start-1) - tss.idx > 200, "distance between tss\
+                and DownstreamGene is less than 200, should not be nTSS !"
         else:
-            assert tss.idx - (downstreamGene.end -1) > 200, "distance between tss\
-                and downstreamGene is less than 200, should not be nTSS !"
-        tss.description += ", before gene %s"%(downstreamGene.Name)
+            assert tss.idx - (DownstreamGene.end -1) > 200, "distance between tss\
+                and DownstreamGene is less than 200, should not be nTSS !"
+        tss.description += ", before gene %s"%(DownstreamGene.Name)
 
-    if antiNearestGene:
-        assert tss.idx - (antiNearestGene.end-1) > 50 or \
-                (antiNearestGene.start-1) - tss.idx > 50, "distance between tss \
-                and antiNearestGene is less than 50, should not be nTSS !"
-    tss.description += ", antistrand nearest gene is %s"%(antiNearestGene.Name)
+    if NearestAntiStrandGene:
+        assert tss.idx - (NearestAntiStrandGene.end-1) > 50 or \
+                (NearestAntiStrandGene.start-1) - tss.idx > 50, "distance between tss \
+                and NearestAntiStrandGene is less than 50, should not be nTSS !"
+    tss.description += ", antistrand nearest gene is %s"%(NearestAntiStrandGene.Name)
 
     tss.type = "nTSS"
     tss.product = "nTSS"
@@ -786,7 +1136,7 @@ def parse_tssTable(tssTable):
 
     attributes = []
     fwd_tss_dict = {} # {idx:tss}
-    rev_tss_dict = {} # {idx:tss
+    rev_tss_dict = {} # {idx:tss}
 
     with open(tssTable, "r") as ih:
         header = ih.readline()
@@ -801,6 +1151,7 @@ def parse_tssTable(tssTable):
             for i, attr in enumerate(attributes[1:]):
                 if attr not in ['strand', 'tss', 'cov']:
                     setattr(rawTss, attr, line[i+1])
+                    #print attr +" was set to %s"%str(getattr(rawTss, attr))
             if strand == "+":
                 fwd_tss_dict.update({idx:rawTss})
             else:
@@ -818,16 +1169,18 @@ def classify(args):
     prefix = args.prefix
 
     if prefix:
-        outfile = prefix + "_classified.tab"
+        outfile = prefix + "_classified.tss"
     else:
         basename = os.path.basename(tssTable)
         filestem = os.path.splitext(basename)[0]
-        outfile = filestem + "_classified.tab"
+        outfile = filestem + "_classified.tss"
 
     # parse tssTable and gffFile
     fwd_tss_dict, rev_tss_dict = parse_tssTable(tssTable)
+
     fwd_gene_dict, rev_gene_dict, fwd_gene_starts_dict, rev_gene_starts_dict = \
                                              _get_gene_dict_from_gff(gffFile)
+
     # get genome length
     headers, arrays = _read_grp(grpFile)
     genome_length = len(arrays[0])
@@ -842,23 +1195,206 @@ def classify(args):
         find_nearest_gene(tss, fwd_gene_dict, rev_gene_dict, fwd_gene_starts_dict,
                           rev_gene_starts_dict, genome_length)
 
+    # check tss attributes
+    #for tss in fwd_tss_dict.values():
+    #    for attr in tss.__dict__.keys():
+    #        print attr, getattr(tss, attr)
+
     # classify tss type, and update tss description
     for tss in fwd_tss_dict.itervalues():
         update_merged_cov_region(tss, fwd_cov)
         classify_tss_type_and_update_description(tss)
-        tss.update_ID()
+        tss.update_attribute_dict()
     for tss in rev_tss_dict.itervalues():
         update_merged_cov_region(tss, rev_cov)
         classify_tss_type_and_update_description(tss)
-        tss.update_ID()
+        tss.update_attribute_dict()
 
     with open(outfile, 'w') as oh:
+        oh.write("#ID\tExpression\tType\tStart\tEnd\tDescription\tStrand\tProduct\tAttributes\n")
         for tss in fwd_tss_dict.itervalues():
-            print tss.ID, tss.idx, tss.type, tss.tss, tss.cov
             oh.write(str(tss)+"\n")
-        for tss in rev_tss_dict.iteritems():
-            print str(tss)
+        for tss in rev_tss_dict.itervalues():
             oh.write(str(tss)+"\n")
+
+
+
+def parse_tssFile(tssFile):
+    """parse tssFile in gff-like format, return fwd_tss_dict and rev_tss_dict"""
+
+    fwd_tss_dict = {} # {idx:tss}
+    rev_tss_dict = {} # {idx:tss}
+
+    with open(tssFile, "r") as ih:
+        header = ih.readline()
+        for line in ih:
+            line = line.strip().split("\t")
+            ID = line[0]
+            tss = line[1]
+            type = line[2]
+            idx = int(line[3]) -1
+            description = line[5]
+            strand = line[6]
+            product = line[7]
+            attributes = line[8]
+            TSSobj = TSS(idx, strand, tss)
+            TSSobj.ID = ID
+            TSSobj.type = type
+            TSSobj.description = description
+            TSSobj.product = product
+            TSSobj.set_attribute_dict_from_string(attributes)
+            if strand == "+":
+                fwd_tss_dict.update({idx:TSSobj})
+            else:
+                assert strand == "-", "TSS strand should be + or -, not %s"%strand
+                rev_tss_dict.update({idx:TSSobj})
+
+    return fwd_tss_dict, rev_tss_dict
+
+
+def _update_promoter_sequence(tss, genomeSeq, region):
+    """
+    :param tss:       input tss instance
+    :param genomeSeq: input genomeSeq in Bio.Seq format
+    :return:          None, with tss field 'promoterSeq' updated
+    """
+    if tss.strand == "+":
+        promoterSeq = genomeSeq[tss.idx-region:tss.idx+1]
+    else:
+        assert tss.strand == "-", 'tss strand should be -, not %s'%tss.strand
+        promoterSeq = genomeSeq[tss.idx:tss.idx+region+1].reverse_complement()
+
+    tss.set_subattribute('PromoterSeq', str(promoterSeq.seq).upper())
+
+
+def addPromoter(args):
+    tssFile = args.tssFile
+    genomeSeq = args.genomeSeq
+    region = args.region
+    prefix = args.prefix
+
+    if prefix:
+        outfile = prefix + "_promoter.tss"
+    else:
+        basename = os.path.basename(tssFile)
+        filestem = os.path.splitext(basename)[0]
+        outfile = filestem + "_promoter.tss"
+
+    # parse fasta
+    genome = SeqIO.read(genomeSeq, 'fasta')
+
+
+    # parse tssFile
+    fwd_tss_dict, rev_tss_dict = parse_tssFile(tssFile)
+
+    # collect total TSS
+    total_tss = []
+    for tss in fwd_tss_dict.itervalues():
+        total_tss.append(tss)
+    for tss in rev_tss_dict.itervalues():
+        total_tss.append(tss)
+
+    # update promoter sequences of TSS, totally 51 nt including current TSS position
+    for tss in total_tss:
+        _update_promoter_sequence(tss, genome, region)
+
+    # get naive tata sequences for tss with more than 200 reads
+    total_tss = sorted(total_tss, key=lambda x: x.tss, reverse=True)
+    TATA.get_naive_tata_box_sequences(total_tss, genome, init_cutoff=200)
+    gc_content, nucl_dict = TATA.get_genome_gc_content(genomeSeq)
+    naive_pssm = create_motif_from_instances(TATA.naive_tata_box, nucl_dict)
+
+    refined_TATA_instances = get_refined_tata_instances(naive_pssm, total_tss, nucl_dict, cutoff=200)
+    refined_pssm = create_motif_from_instances(refined_TATA_instances, background=nucl_dict)
+
+    scoring_tss_probability(refined_pssm, total_tss, background=nucl_dict)
+
+    with open(outfile, "w") as oh:
+        oh.write("#ID\tExpression\tType\tStart\tEnd\tDescription\tStrand\tProduct\tAttributes\n")
+        for tss in total_tss:
+            oh.write(str(tss)+"\n")
+
+
+def filterTss(args):
+    tssFile = args.tssFile
+    Expression = args.Expression
+    TssCovRatio = args.TssCovRatio
+    LocalTssEnrichmentScore = args.LocalTssEnrichmentScore
+    LocalCoverageEnrichmentScore = args.LocalCoverageEnrichmentScore
+    prefix = args.prefix
+
+    if prefix:
+        outfile = prefix + "_filtered_%.2f.tss"%Expression
+    else:
+        basename = os.path.basename(tssFile)
+        filestem = os.path.splitext(basename)[0]
+        outfile = filestem + "_filtered_%.2f.tss"%Expression
+
+    # parse tssFile
+    fwd_tss_dict, rev_tss_dict = parse_tssFile(tssFile)
+    with open(outfile, "w") as oh:
+        oh.write("#ID\tExpression\tType\tStart\tEnd\tDescription\tStrand\tProduct\tAttributes\n")
+        for tss in fwd_tss_dict.itervalues():
+            expr = float(tss.tss)
+            ratio = float(tss.get_subattribute('TssCovRatio'))
+            ltes = float(tss.get_subattribute('LocalTssEnrichmentScore'))
+            lces = float(tss.get_subattribute('LocalCoverageEnrichmentScore'))
+            if expr >= Expression and ratio >= TssCovRatio and ltes >= LocalTssEnrichmentScore \
+                    and lces >= LocalCoverageEnrichmentScore:
+                oh.write(str(tss)+"\n")
+        for tss in rev_tss_dict.itervalues():
+            expr = float(tss.tss)
+            ratio = float(tss.get_subattribute('TssCovRatio'))
+            ltes = float(tss.get_subattribute('LocalTssEnrichmentScore'))
+            lces = float(tss.get_subattribute('LocalCoverageEnrichmentScore'))
+            if expr >= Expression and ratio >= TssCovRatio and ltes >= LocalTssEnrichmentScore \
+                    and lces >= LocalCoverageEnrichmentScore:
+                oh.write(str(tss) + "\n")
+
+
+def mapGrp2Tss(args):
+    # TODO:
+    input_grps = args.input_grps
+    tssFile = args.tssFile
+    prefix = args.prefix
+
+    if prefix:
+        outfile = prefix + "_mapped.tab"
+    else:
+        basename = os.path.basename(tssFile)
+        filestem = os.path.splitext(basename)[0]
+        outfile = filestem + "_mapped.tab"
+
+    # parse tssFile
+    fwd_tss_dict, rev_tss_dict = parse_tssFile(tssFile)
+
+    # parse grp files, set tss count for each tss
+    sampleNr = len(input_grps)
+    for i, grpFile in enumerate(input_grps):
+        headers, arrays = _read_grp(grpFile)
+        ncol = _get_ncol(headers)
+        if ncol == 4:
+            fwd_tss_arr, rev_tss_arr = arrays[1], arrays[3]
+        else:
+            fwd_tss_arr, rev_tss_arr = arrays[0], arrays[1]
+
+        # add count to tss instances
+        fwd_tss_idx_count = {idx:count for idx, count in enumerate(fwd_tss_arr)}
+        for tss_idx, tss in fwd_tss_dict.iteritems():
+            count = fwd_tss_idx_count[tss_idx]
+            tss.set_subattribute('TSSCount_Sample_%d'%i, count)
+        rev_tss_idx_count = {idx:count for idx, count in enumerate(rev_tss_arr)}
+        for tss_idx, tss in rev_tss_dict.iteritems():
+            count = rev_tss_idx_count[tss_idx]
+            tss.set_subattribute('TSSCount_Sample_%d'%i, count)
+
+#    with open(outfile, 'w') as oh:
+#        oh.write("#ID\t")
+#        for i in range(sampleNr):
+#            oh.write("TSSCount_Sample_%d\t"%i)
+#        oh.write('Strand\t\type\tTssCovRatio\tLocalCoverageEnrichmentScore\tLocalTssEnrichmentScore\t\Description\tProduct\n')
+
+
 
 def main():
 
@@ -893,6 +1429,46 @@ def main():
     parser_classify.add_argument('gffFile', help='input gff file')
     parser_classify.add_argument('grpFile', help='input grp file')
     parser_classify.set_defaults(func=classify)
+
+
+    # ----------- #
+    # addPromoter #
+    # ----------- #
+    parser_addPromoter = subparsers.add_parser('addPromoter', parents=[parent_parser],
+                                               help='add promoterSeq and TATA to TSS file')
+    parser_addPromoter.add_argument('genomeSeq', help='genome sequence in fasta format')
+    parser_addPromoter.add_argument('tssFile', help='input TSS file in GFF-like format')
+    parser_addPromoter.add_argument('-r', '--region', type=int, default=50, help='upstream region of TSS, default=50')
+    parser_addPromoter.set_defaults(func=addPromoter)
+
+
+    # --------- #
+    # filterTss #
+    # --------- #
+    parser_filterTss = subparsers.add_parser('filterTss', parents=[parent_parser],
+                                             help='filter TSS according to given parameters')
+    parser_filterTss.add_argument('tssFile', help='input TSS file in GFF-like format')
+    parser_filterTss.add_argument('-e', '--Expression', type=float, default=4,
+                                  help='minimum expression cutoff [>=0], default=4')
+    parser_filterTss.add_argument('-r', '--TssCovRatio', type=float, default=0.5,
+                                  help='tss/cov ratio cutoff [0 ~ 1], default=0.5')
+    parser_filterTss.add_argument('-c', '--LocalCoverageEnrichmentScore', type=float, default=0.5,
+                                  help='local coverage enrichment score cutoff [0 ~ 1], default=0.5')
+    parser_filterTss.add_argument('-t', '--LocalTssEnrichmentScore', type=float, default=0.3,
+                                  help='local TSS enrichment score cutoff [0 ~ 1], default=0.3')
+    parser_filterTss.set_defaults(func=filterTss)
+
+
+    # ---------- #
+    # mapGrp2Tss #
+    # ---------- #
+    parser_mapGrp2Tss = subparsers.add_parser('mapGrp2Tss', parents=[parent_parser],
+                                              help='count tss reads in grp files, for tss position defined in Tss file')
+    parser_mapGrp2Tss.add_argument("input_grps", nargs="+", help="grp files to be mapped")
+    parser_mapGrp2Tss.add_argument('tssFile', help='Input TSS file in GFF format, produced by classify subcommand')
+    parser_mapGrp2Tss.set_defaults(func=mapGrp2Tss)
+
+
 
 
     # ----------------------- #
