@@ -576,6 +576,7 @@ class TSS():
         self.merged_cov_region = None    # a tuple represent the start and end pos of merged coverage region, will be used in gTSS_check
         self.attribute=None
         self.attribute_dict = None
+        self.counts = []
 
         # update this TSS instance to pos2tss
         if self.strand == "+":
@@ -1382,17 +1383,23 @@ def mapGrp2Tss(args):
         fwd_tss_idx_count = {idx:count for idx, count in enumerate(fwd_tss_arr)}
         for tss_idx, tss in fwd_tss_dict.iteritems():
             count = fwd_tss_idx_count[tss_idx]
-            tss.set_subattribute('TSSCount_Sample_%d'%i, count)
+            tss.counts.append(count)
         rev_tss_idx_count = {idx:count for idx, count in enumerate(rev_tss_arr)}
         for tss_idx, tss in rev_tss_dict.iteritems():
             count = rev_tss_idx_count[tss_idx]
-            tss.set_subattribute('TSSCount_Sample_%d'%i, count)
+            tss.counts.append(count)
 
-#    with open(outfile, 'w') as oh:
-#        oh.write("#ID\t")
-#        for i in range(sampleNr):
-#            oh.write("TSSCount_Sample_%d\t"%i)
-#        oh.write('Strand\t\type\tTssCovRatio\tLocalCoverageEnrichmentScore\tLocalTssEnrichmentScore\t\Description\tProduct\n')
+    with open(outfile, 'w') as oh:
+        oh.write("#ID\t")
+        for i in range(sampleNr):
+            oh.write("TSSCount_Sample_%d\t"%i)
+        oh.write('Strand\ttype\tTssCovRatio\tLocalCoverageEnrichmentScore\tLocalTssEnrichmentScore\tDescription\tProduct\n')
+        for tss in fwd_tss_dict.itervalues():
+            oh.write(tss.ID + "\t")
+            oh.write("\t".join([str(it) for it in tss.counts])+"\t")
+            oh.write(tss.strand+'\t'+tss.type+'\t'+tss.get_subattribute("TssCovRatio")+"\t"+
+                     tss.get_subattribute("LocalCoverageEnrichmentScore")+'\t'+
+                     tss.get_subattribute("LocalTssEnrichmentScore")+'\t'+tss.description+'t'+tss.product+'\n')
 
 
 
