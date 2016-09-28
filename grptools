@@ -747,7 +747,7 @@ def main():
     parser_aggregate.add_argument('-r', '--region', type=int, default=5, help='the length of upstream or '
                                                                               'downstream region')
     parser_aggregate.add_argument('-g', '--guide_grp', help='template grp file to guide tss aggregation')
-    parser_aggregate.add_argument('-s', '--set_to_zero', action='store_true', default=True,
+    parser_aggregate.add_argument('-s', '--set_to_zero', action='store_true', default=False,
                                   help='set tss to zero where positions were zero in template, default=True')
     parser_aggregate.set_defaults(func=aggregate)
 
