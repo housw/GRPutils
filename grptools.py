@@ -528,7 +528,7 @@ def combine(args):
     _write_grp(outfile, combined_headers, combined_arrays, toInt)
 
 
-def _group_tss(tss_arr, before=5, after=5, template_tss_arr=None, set_to_zero=True):
+def _group_tss(tss_arr, before=5, after=5, template_tss_arr=None, set_to_zero=False):
     """
     :param tss_arr: input tss array
     :param before:  upstream region
