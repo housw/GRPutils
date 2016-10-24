@@ -23,6 +23,47 @@ from Bio import SeqIO
 from collections import Counter
 
 
+def main_usage(parser):
+    """ display usage for main parser
+    """
+    print >>sys.stderr, parser.format_help()
+    # retrieve subparsers from parser
+    print >>sys.stderr, "\n|---------------------|"
+    print >>sys.stderr, "|Available subcommands|"
+    print >>sys.stderr, "|---------------------|"
+    for action in parser._actions:
+        if isinstance(action, argparse._SubParsersAction):
+            for choice, subparser in action.choices.items():
+                print >>sys.stderr, "\t%s"%choice
+
+def subparser_usage(argv, parser):
+    """ display usage for subparser
+    """
+    cmd = argv[1]
+    found = 0
+    for action in parser._actions:
+        if isinstance(action, argparse._SubParsersAction):
+            for choice, subparser in action.choices.items():
+                if cmd == choice:
+                    print >>sys.stderr, subparser.format_help()
+                    found = 1
+    if not found:
+        print >>sys.stderr, "\n\nERROR:%s is not a valid command!!!\n\n"%cmd
+        main_usage(parser)
+
+def display_help(argv, parser):
+    """ display help information
+    """
+    if len(argv) == 1:
+        main_usage(parser)
+        sys.exit(1)
+    elif len(argv) == 2:
+        subparser_usage(argv, parser)
+        sys.exit(1)
+    else:
+        pass
+
+
 def _get_genome_size(input_file):
     """ parse fasta records in input_file,
         return the fastaName:genomeSize as a dictionary
@@ -584,7 +625,7 @@ def aggregate(args):
     """
     input_grp = args.input_grp
     template_grp = args.guide_grp
-    set_to_zero = args.set_to_zero
+    set_to_zero = True if args.set_to_zero else False
     region = args.region
     prefix = args.prefix
     toInt = args.toInt
@@ -617,7 +658,7 @@ def aggregate(args):
     new_arrays = []
     if template_grp:
         for arr, guide_arr in zip(tss_arrays, guide_tss):
-            new_arr = _group_tss(arr, before=region, after=region, template_tss_arr=guide_arr, set_to_zero=True)
+            new_arr = _group_tss(arr, before=region, after=region, template_tss_arr=guide_arr, set_to_zero=set_to_zero)
             new_arrays.append(new_arr)
     else:
         for arr in tss_arrays:
@@ -747,8 +788,8 @@ def main():
     parser_aggregate.add_argument('-r', '--region', type=int, default=5, help='the length of upstream or '
                                                                               'downstream region')
     parser_aggregate.add_argument('-g', '--guide_grp', help='template grp file to guide tss aggregation')
-    parser_aggregate.add_argument('-s', '--set_to_zero', action='store_true', default=False,
-                                  help='set tss to zero where positions were zero in template, default=True')
+    parser_aggregate.add_argument('-s', '--set_to_zero', action='store_true',
+                                  help='set tss to zero where positions were zero in template')
     parser_aggregate.set_defaults(func=aggregate)
 
 
@@ -757,9 +798,7 @@ def main():
     # ----------------------- #
 
     # display help
-    if len(sys.argv) == 1:
-        print parser.format_help()
-        sys.exit(1)
+    display_help(sys.argv, parser)
 
     # parse args
     args = parser.parse_args()
@@ -769,4 +808,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

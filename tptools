@@ -33,6 +33,46 @@ from itertools import izip
 from grptools import _read_grp, _group_tss, _get_ncol
 
 
+def main_usage(parser):
+    """ display usage for main parser
+    """
+    print >>sys.stderr, parser.format_help()
+    # retrieve subparsers from parser
+    print >>sys.stderr, "\n|---------------------|"
+    print >>sys.stderr, "|Available subcommands|"
+    print >>sys.stderr, "|---------------------|"
+    for action in parser._actions:
+        if isinstance(action, argparse._SubParsersAction):
+            for choice, subparser in action.choices.items():
+                print >>sys.stderr, "\t%s"%choice
+
+def subparser_usage(argv, parser):
+    """ display usage for subparser
+    """
+    cmd = argv[1]
+    found = 0
+    for action in parser._actions:
+        if isinstance(action, argparse._SubParsersAction):
+            for choice, subparser in action.choices.items():
+                if cmd == choice:
+                    print >>sys.stderr, subparser.format_help()
+                    found = 1
+    if not found:
+        print >>sys.stderr, "\n\nERROR:%s is not a valid command!!!\n\n"%cmd
+        main_usage(parser)
+
+def display_help(argv, parser):
+    """ display help information
+    """
+    if len(argv) == 1:
+        main_usage(parser)
+        sys.exit(1)
+    elif len(argv) == 2:
+        subparser_usage(argv, parser)
+        sys.exit(1)
+    else:
+        pass
+
 
 class BaseGffRecord(object):
     """ This is the base class of GFF record, all the other GFF record types should be
@@ -1354,9 +1394,10 @@ def filterTss(args):
 
 
 def mapGrp2Tss(args):
-    # TODO:
+    # TODO: get max of surrounding window, set it to count
     input_grps = args.input_grps
     tssFile = args.tssFile
+    region = args.region
     prefix = args.prefix
 
     if prefix:
@@ -1374,6 +1415,7 @@ def mapGrp2Tss(args):
     for i, grpFile in enumerate(input_grps):
         headers, arrays = _read_grp(grpFile)
         ncol = _get_ncol(headers)
+        genomeLen = len(arrays[0])
         if ncol == 4:
             fwd_tss_arr, rev_tss_arr = arrays[1], arrays[3]
         else:
@@ -1382,25 +1424,37 @@ def mapGrp2Tss(args):
         # add count to tss instances
         fwd_tss_idx_count = {idx:count for idx, count in enumerate(fwd_tss_arr)}
         for tss_idx, tss in fwd_tss_dict.iteritems():
-            count = fwd_tss_idx_count[tss_idx]
+            left = tss_idx - region if tss_idx - region > 0 else 0
+            right = tss_idx+1+region if tss_idx+1+region < genomeLen else genomeLen
+            count = max([fwd_tss_idx_count[it] for it in range(left, right)])
             tss.counts.append(count)
         rev_tss_idx_count = {idx:count for idx, count in enumerate(rev_tss_arr)}
         for tss_idx, tss in rev_tss_dict.iteritems():
-            count = rev_tss_idx_count[tss_idx]
+            left = tss_idx - region if tss_idx - region > 0 else 0
+            right = tss_idx+1+region if tss_idx+1+region < genomeLen else genomeLen
+            count = max([rev_tss_idx_count[it] for it in range(left, right)])
             tss.counts.append(count)
 
     with open(outfile, 'w') as oh:
-        oh.write("#ID\t")
+        # write header
+        oh.write("#ID\tPseudoCount\t")
         for i in range(sampleNr):
             oh.write("TSSCount_Sample_%d\t"%i)
-        oh.write('Strand\ttype\tTssCovRatio\tLocalCoverageEnrichmentScore\tLocalTssEnrichmentScore\tDescription\tProduct\n')
+        oh.write('Type\tStrand\tPosition\tTssCovRatio\tLocalCoverageEnrichmentScore\tLocalTssEnrichmentScore\tDescription\tProduct\n')
+        # write fwd
         for tss in fwd_tss_dict.itervalues():
-            oh.write(tss.ID + "\t")
+            oh.write(tss.ID + "\t"+ str(tss.tss)+"\t")
             oh.write("\t".join([str(it) for it in tss.counts])+"\t")
-            oh.write(tss.strand+'\t'+tss.type+'\t'+tss.get_subattribute("TssCovRatio")+"\t"+
+            oh.write(tss.type+'\t'+tss.strand+'\t'+str(tss.idx+1)+"\t"+tss.get_subattribute("TssCovRatio")+"\t"+
                      tss.get_subattribute("LocalCoverageEnrichmentScore")+'\t'+
-                     tss.get_subattribute("LocalTssEnrichmentScore")+'\t'+tss.description+'t'+tss.product+'\n')
-
+                     tss.get_subattribute("LocalTssEnrichmentScore")+'\t'+tss.description+'\t'+tss.product+'\n')
+        # write rev
+        for tss in rev_tss_dict.itervalues():
+            oh.write(tss.ID + "\t"+ str(tss.tss)+'\t')
+            oh.write("\t".join([str(it) for it in tss.counts])+"\t")
+            oh.write(tss.type+'\t'+tss.strand+'\t'+str(tss.idx+1)+"\t"+tss.get_subattribute("TssCovRatio")+"\t"+
+                     tss.get_subattribute("LocalCoverageEnrichmentScore")+'\t'+
+                     tss.get_subattribute("LocalTssEnrichmentScore")+'\t'+tss.description+'\t'+tss.product+'\n')
 
 
 def main():
@@ -1473,6 +1527,7 @@ def main():
                                               help='count tss reads in grp files, for tss position defined in Tss file')
     parser_mapGrp2Tss.add_argument("input_grps", nargs="+", help="grp files to be mapped")
     parser_mapGrp2Tss.add_argument('tssFile', help='Input TSS file in GFF format, produced by classify subcommand')
+    parser_mapGrp2Tss.add_argument('-r', '--region', type=int, default=5, help='upstream/downstream region, default=5')
     parser_mapGrp2Tss.set_defaults(func=mapGrp2Tss)
 
 
@@ -1483,9 +1538,7 @@ def main():
     # ----------------------- #
 
     # display help
-    if len(sys.argv) == 1:
-        print parser.format_help()
-        sys.exit(1)
+    display_help(sys.argv, parser)
 
     # parse args
     args = parser.parse_args()
