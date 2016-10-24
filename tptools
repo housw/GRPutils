@@ -37,14 +37,6 @@ def main_usage(parser):
     """ display usage for main parser
     """
     print >>sys.stderr, parser.format_help()
-    # retrieve subparsers from parser
-    print >>sys.stderr, "\n|---------------------|"
-    print >>sys.stderr, "|Available subcommands|"
-    print >>sys.stderr, "|---------------------|"
-    for action in parser._actions:
-        if isinstance(action, argparse._SubParsersAction):
-            for choice, subparser in action.choices.items():
-                print >>sys.stderr, "\t%s"%choice
 
 def subparser_usage(argv, parser):
     """ display usage for subparser

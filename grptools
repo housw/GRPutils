@@ -27,14 +27,6 @@ def main_usage(parser):
     """ display usage for main parser
     """
     print >>sys.stderr, parser.format_help()
-    # retrieve subparsers from parser
-    print >>sys.stderr, "\n|---------------------|"
-    print >>sys.stderr, "|Available subcommands|"
-    print >>sys.stderr, "|---------------------|"
-    for action in parser._actions:
-        if isinstance(action, argparse._SubParsersAction):
-            for choice, subparser in action.choices.items():
-                print >>sys.stderr, "\t%s"%choice
 
 def subparser_usage(argv, parser):
     """ display usage for subparser
@@ -625,7 +617,7 @@ def aggregate(args):
     """
     input_grp = args.input_grp
     template_grp = args.guide_grp
-    set_to_zero = True if args.set_to_zero else False
+    set_to_zero = args.set_to_zero
     region = args.region
     prefix = args.prefix
     toInt = args.toInt
@@ -658,7 +650,7 @@ def aggregate(args):
     new_arrays = []
     if template_grp:
         for arr, guide_arr in zip(tss_arrays, guide_tss):
-            new_arr = _group_tss(arr, before=region, after=region, template_tss_arr=guide_arr, set_to_zero=set_to_zero)
+            new_arr = _group_tss(arr, before=region, after=region, template_tss_arr=guide_arr, set_to_zero=True)
             new_arrays.append(new_arr)
     else:
         for arr in tss_arrays:
@@ -788,8 +780,8 @@ def main():
     parser_aggregate.add_argument('-r', '--region', type=int, default=5, help='the length of upstream or '
                                                                               'downstream region')
     parser_aggregate.add_argument('-g', '--guide_grp', help='template grp file to guide tss aggregation')
-    parser_aggregate.add_argument('-s', '--set_to_zero', action='store_true',
-                                  help='set tss to zero where positions were zero in template')
+    parser_aggregate.add_argument('-s', '--set_to_zero', action='store_true', default=True,
+                                  help='set tss to zero where positions were zero in template, default=True')
     parser_aggregate.set_defaults(func=aggregate)
 
 
