@@ -578,11 +578,14 @@ def _group_tss(tss_arr, before=5, after=5, template_tss_arr=None, set_to_zero=Fa
     # index array for sorted tss_arr from small to large value
     if template_tss_arr is not None:
         sort_index = np.argsort(template_tss_arr)
-    sort_index = np.argsort(tss_arr)
+    else:
+        sort_index = np.argsort(tss_arr)
     # inverse to make high TSS number's index in beginning
     sort_index = sort_index[::-1]
 
+
     for index in sort_index:
+        #print "current array index is : %d, current guide value is: %d"%(index, template_tss_arr[index])
         # maybe this pos is already merged to a neighboring highly expressed tss
         if tss_arr[index] == 0:
             continue
@@ -650,7 +653,7 @@ def aggregate(args):
     new_arrays = []
     if template_grp:
         for arr, guide_arr in zip(tss_arrays, guide_tss):
-            new_arr = _group_tss(arr, before=region, after=region, template_tss_arr=guide_arr, set_to_zero=True)
+            new_arr = _group_tss(arr, before=region, after=region, template_tss_arr=guide_arr, set_to_zero=set_to_zero)
             new_arrays.append(new_arr)
     else:
         for arr in tss_arrays:
@@ -680,7 +683,7 @@ def main():
     # parent parser, to specify shared arguments, inherited by subparsers
     parent_parser = argparse.ArgumentParser(add_help=False)
     parent_parser.add_argument("-p", "--prefix", required=False, help="output prefix for grp file")
-    parent_parser.add_argument("-t", "--toInt", required=False, action="store_true", default=True,
+    parent_parser.add_argument("-t", "--toInt", required=False, action="store_true",
                                help="write out integer values")
 
 
@@ -780,8 +783,8 @@ def main():
     parser_aggregate.add_argument('-r', '--region', type=int, default=5, help='the length of upstream or '
                                                                               'downstream region')
     parser_aggregate.add_argument('-g', '--guide_grp', help='template grp file to guide tss aggregation')
-    parser_aggregate.add_argument('-s', '--set_to_zero', action='store_true', default=True,
-                                  help='set tss to zero where positions were zero in template, default=True')
+    parser_aggregate.add_argument('-s', '--set_to_zero', action='store_true',
+                                  help='set tss to zero where positions were zero in template, default=False')
     parser_aggregate.set_defaults(func=aggregate)
 
 
