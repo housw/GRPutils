@@ -784,7 +784,7 @@ def main():
                                                                               'downstream region')
     parser_aggregate.add_argument('-g', '--guide_grp', help='template grp file to guide tss aggregation')
     parser_aggregate.add_argument('-s', '--set_to_zero', action='store_true',
-                                  help='set tss to zero where positions were zero in template, default=False')
+                                  help='set tss to zero where positions were zero in template')
     parser_aggregate.set_defaults(func=aggregate)
 
 
