@@ -312,6 +312,77 @@ def merge(args):
     _write_grp(outfile, headers, grp_arrays, toInt)
 
 
+def compareTSS(args):
+    """
+    given a list of grp files, compare their TSS positions, integrate overlapping
+    TSS positions in different grp files into non-redundant positions
+    """
+    grpFile_list = args.input_grps
+    prefix = args.prefix
+    toInt = args.toInt
+    mode = args.mode           # choices=["average", "max", "sumup"],
+    upstream = args.upstream
+    downstream = args.downstream
+
+    if prefix:
+        outfile = prefix+".grp"
+    else:
+        basename = os.path.basename(grpFile_list[0])
+        filestem = os.path.splitext(basename)[0]
+        outfile = filestem+"_compareTSS_" + mode + ".grp"
+
+    # number of grp files
+    n = len(grpFile_list)
+
+    # functions corresponding to mode
+    func = {"average":lambda x, y: (x+y)/2,
+            "max":lambda x, y: x if x > y else y,
+            "sumup":lambda x, y: x+y }
+
+    # read in first one
+    headers, grp_arrays = _read_grp(grpFile_list[0])
+    ncol = _get_ncol(headers)
+    assert ncol == 4, "The grp file must have coverage columns in order to compare TSS positions"
+
+    for grp_file in grpFile_list[1:]:
+        tmp_headers, tmp_grp_arrays = _read_grp(grp_file)
+        assert len(tmp_grp_arrays) == len(grp_arrays), "The input grp files have different number of columns!"
+
+        for i, arr in enumerate(tmp_grp_arrays):
+            if i % 2 == 0:  # coverage columns
+                continue
+            for pos, tmp_tss in enumerate(arr):
+                if tmp_tss <= 1:
+                    continue
+                up = pos-upstream if pos-upstream > 0 else 0
+                down = pos+downstream+1 if pos+downstream+1 < len(arr) else len(arr)
+                tss = max(grp_arrays[i][up:down])
+                tss_index = list(grp_arrays[i][up:down]).index(tss)+up
+                cov_region = grp_arrays[i-1][up:down]
+                tmp_cov_region = tmp_grp_arrays[i-1][up:down]
+
+                # average TSS, also coverage of the clustering region
+                if mode == "average":
+                    grp_arrays[i][tss_index] = sum(tss, tmp_tss)/2
+                    grp_arrays[i-1][up:down] = np.arrays([x+y for x, y in zip(cov_region, tmp_cov_region)])/2
+
+                # take max of TSS, also take the coverage of the sample with higher TSS
+                elif mode == "max":
+                    if tss > tmp_tss:
+                        continue
+                    else:
+                        #grp_arrays[i][up:down] = 0
+                        grp_arrays[i][tss_index] = tmp_tss
+                        grp_arrays[i-1][up:down] = tmp_cov_region
+                # take sum of TSS, also take the sum of the samples for coverage
+                else:
+                    grp_arrays[i][tss_index] = sum(tss, tmp_tss)
+                    grp_arrays[i-1][up:down] = np.arrays([x+y for x, y in zip(cov_region, tmp_cov_region)])
+
+    _write_grp(outfile, headers, grp_arrays, toInt)
+
+
+
 def subtract(args):
     """
     given two grp files, subtract the first one by the second one
@@ -741,6 +812,26 @@ def main():
     parser_summarize = subparsers.add_parser('summarize', parents=[parent_parser], help='summarize input grp file')
     parser_summarize.add_argument("input_grp", help="input grp file to be summarized")
     parser_summarize.set_defaults(func=summarize)
+
+
+    # ---------- #
+    # compareTSS #
+    # ---------- #
+    parser_compareTSS = subparsers.add_parser('compareTSS', parents=[parent_parser],
+                                         help='compare TSS in each grp files, and write a final grp file')
+    parser_compareTSS.add_argument("input_grps", nargs="+", help="grp files to be compared and merged")
+    parser_compareTSS.add_argument("-u", "--upstream", type=int, default=5,
+                                         help="upstream clustering region, default=5")
+    parser_compareTSS.add_argument("-d", "--downstream", type=int, default=5,
+                                         help="downstream clustering region, default=5")
+    mode_help = "average: sum the counts for TSS positions in each pair of grp, then take average. \n \
+                 sumup: sum the counts for TSS positions in each pair of grp. \n \
+                 max: take the maximum counts of TSS positions in each pair of grp.\n \
+                 default=max."
+    parser_compareTSS.add_argument("-m", "--mode", required=False, choices=["average", "max", "sumup"],
+                                  default="max", help=mode_help)
+    parser_compareTSS.set_defaults(func=compareTSS)
+
 
 
     # ----- #
