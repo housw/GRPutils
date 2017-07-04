@@ -267,7 +267,6 @@ class repeat_Region(BaseGffRecord):
 
 
 
-
 class GffRecordParser(object):
     """ This class used to parse gff3 file, to generate BaseGffRecord instances
     """
@@ -676,7 +675,8 @@ class TSS():
                                    'CurrentGene': self._get_Name(self.CurrentGene),
                                    'DownstreamGene':self._get_Name(self.DownstreamGene),
                                    'NearestAntiStrandGene':self._get_Name(self.NearestAntiStrandGene),
-                                   'DownstreamGeneLocusTag':self._get_Locus_tag(self.DownstreamGene)
+                                   'DownstreamGeneLocusTag':self._get_Locus_tag(self.DownstreamGene),
+                                   'color':'255+0+0'
                                    })
         # update attribute
         self.attribute = ""
@@ -1194,11 +1194,41 @@ def parse_tssTable(tssTable):
     return fwd_tss_dict, rev_tss_dict
 
 
+def merge_rdm_grp_coverage(grp_lists, average=True):
+    """ this function will be used to merge the coverage from grp_lists,
+        if average, then the merged coverage will be divided by the length of grp_lists
+    """
+    # read in first one
+    headers, arrays = _read_grp(grp_lists[0])
+    ncol = _get_ncol(headers)
+    if ncol == 2:
+        fwd_cov, rev_cov = arrays[0], arrays[1]
+    else:
+        fwd_cov, rev_cov = arrays[0], arrays[2]
+
+    for grp_file in grp_lists[1:]:
+        tmp_headers, tmp_arrays = _read_grp(grp_file)
+        tmp_ncol = _get_ncol(tmp_headers)
+        if tmp_ncol == 2:
+            tmp_fwd_cov, tmp_rev_cov = tmp_arrays[0], tmp_arrays[1]
+        else:
+            tmp_fwd_cov, tmp_rev_cov = tmp_arrays[0], tmp_arrays[2]
+        fwd_cov += tmp_fwd_cov
+        rev_cov += tmp_rev_cov
+
+    if average:
+        fwd_cov = fwd_cov/len(grp_lists)
+        rev_cov = rev_cov/len(grp_lists)
+
+    return fwd_cov, rev_cov
+
+
 def classify(args):
     """classify TSS into gTSS, iTSS, nTSS, aTSS"""
     tssTable = args.tssTable
     gffFile = args.gffFile
     grpFile = args.grpFile
+    rdmGrpFiles = args.rdmGrpFiles
     prefix = args.prefix
 
     if prefix:
@@ -1213,6 +1243,9 @@ def classify(args):
 
     fwd_gene_dict, rev_gene_dict, fwd_gene_starts_dict, rev_gene_starts_dict = \
                                              _get_gene_dict_from_gff(gffFile)
+
+    # get random grp coverages
+    rdm_fwd_cov, rdm_rev_cov = merge_rdm_grp_coverage(rdmGrpFiles)
 
     # get genome length
     headers, arrays = _read_grp(grpFile)
@@ -1235,11 +1268,11 @@ def classify(args):
 
     # classify tss type, and update tss description
     for tss in fwd_tss_dict.itervalues():
-        update_merged_cov_region(tss, fwd_cov)
+        update_merged_cov_region(tss, rdm_fwd_cov)
         classify_tss_type_and_update_description(tss)
         tss.update_attribute_dict()
     for tss in rev_tss_dict.itervalues():
-        update_merged_cov_region(tss, rev_cov)
+        update_merged_cov_region(tss, rdm_rev_cov)
         classify_tss_type_and_update_description(tss)
         tss.update_attribute_dict()
 
@@ -1385,6 +1418,82 @@ def filterTss(args):
                 oh.write(str(tss) + "\n")
 
 
+def filterCounts(args):
+    ''' filter the TSS table with read counts from different samples
+    '''
+
+    countMappedTssTable = args.countMappedTssTable
+    sampleColumns = args.sampleColumns
+    sampleNr = len(sampleColumns)
+    minimum = args.minimum
+    average = args.average
+    write_gff = args.write_gff
+    prefix = args.prefix
+
+    outgff = None
+    if prefix:
+        outfile = prefix + "_filtered_m%.2f_a%.2f.tab"%(minimum, average)
+        if write_gff:
+            outgff = prefix + "_filtered_m%.2f_a%.2f.tss"%(minimum, average)
+    else:
+        basename = os.path.basename(countMappedTssTable)
+        filestem = os.path.splitext(basename)[0]
+        outfile = filestem + "_filtered_m%.2f_a%.2f.tab"%(minimum, average)
+        if write_gff:
+            outgff = filestem + "_filtered_m%.2f_a%.2f.tss"%(minimum, average)
+
+    with open(countMappedTssTable, "r") as ih, open(outfile, 'w') as oh:
+        header = ih.readline()
+        oh.write(header)
+
+        if write_gff:
+            header = header.strip().lstrip("#").split("\t")
+            tss_oh = open(outgff, "w")
+            tss_oh.write("#ID\tExpression\tType\tStart\tEnd\tDescription\tStrand\tProduct\tAttributes\n")
+
+        for oline in ih:
+            line = oline.strip().split("\t")
+            sampleCounts = np.array([float(line[i]) for i in sampleColumns])
+            if np.any(sampleCounts >= minimum) and np.mean(sampleCounts) >= average:
+                oh.write(oline)
+                if write_gff:
+                    try:
+                        ID_pos = header.index("ID")
+                        Expression_pos = header.index("PseudoCount")
+                        Type_pos = header.index("Type")
+                        Start_pos = header.index("Position")
+                        End_pos = Start_pos
+                        Description_pos = header.index("Description")
+                        Strand_pos = header.index("Strand")
+                        Product_pos = header.index("Product")
+                        other_pos = [i for i in range(len(header)) if i not in
+                                 [ID_pos, Expression_pos, Type_pos, Start_pos,
+                                 End_pos, Description_pos, Strand_pos, Product_pos]]
+                    except ValueError as e:
+                        error = "File format doesn't fit this script, the error is: %s"%e
+                        raise Exception(error)
+                    ID = line[ID_pos]
+                    Expression = line[Expression_pos]
+                    Type = line[Type_pos]
+                    Start = line[Start_pos]
+                    End = line[End_pos]
+                    Description = line[Description_pos]
+                    Strand = line[Strand_pos]
+                    Product = line[Product_pos]
+                    Attributes = []
+                    for pos in other_pos:
+                        Attributes.append(header[pos]+"="+line[pos])
+                    Attributes = "ID=%s;Name=%s;"%(ID, ID)+ ";".join(Attributes)
+                    if not "color=" in Attributes:
+                        Attributes += ";color=255+0+0"
+                    tss_oh.write(ID+"\t"+Expression+"\t"+Type+"\t"+\
+                          Start+"\t"+End+"\t"+Description+"\t"+\
+                          Strand+"\t"+Product+"\t"+Attributes+"\n")
+        if not tss_oh.closed:
+            tss_oh.close()
+
+
+
 def mapGrp2Tss(args):
     # TODO: get max of surrounding window, set it to count
     input_grps = args.input_grps
@@ -1481,6 +1590,7 @@ def main():
     parser_classify.add_argument('tssTable', help='input TSS table generated by grp2TssTable')
     parser_classify.add_argument('gffFile', help='input gff file')
     parser_classify.add_argument('grpFile', help='input grp file')
+    parser_classify.add_argument('-r', '--rdmGrpFiles', nargs="+", help="grp files from RNA-Seq libraries")
     parser_classify.set_defaults(func=classify)
 
 
@@ -1523,6 +1633,21 @@ def main():
     parser_mapGrp2Tss.set_defaults(func=mapGrp2Tss)
 
 
+    # ------------ #
+    # filterCounts #
+    # ------------ #
+    parser_filterCounts = subparsers.add_parser('filterCounts', parents=[parent_parser],
+                                             help='filter counts mapped to TSS, by given parameters')
+    parser_filterCounts.add_argument('countMappedTssTable', help='input TSS table with count columns '\
+                                     'of different samples')
+    parser_filterCounts.add_argument("sampleColumns", nargs="+", type=int, help="0-based column index of TSS counts for samples")
+    parser_filterCounts.add_argument('-n', '--minimum', type=float, default=100,
+                                  help='minimum count cutoff, at least one sample need to meet, default=50')
+    parser_filterCounts.add_argument('-a', '--average', type=float, default=50,
+                                  help='average count cutoff across all samples, default=50')
+    parser_filterCounts.add_argument('-w', '--write_gff', action='store_true',
+                                  help='write filtered TSS in gff format')
+    parser_filterCounts.set_defaults(func=filterCounts)
 
 
     # ----------------------- #

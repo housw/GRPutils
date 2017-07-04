@@ -86,7 +86,7 @@ def main():
     args = parser.parse_args()
     print "[merge_grp] input grp files are: ", ";".join(args.inputFile)
 
-    average_grpFile(grpFile_list=args.inputFile, prefix=args.prefix, toInteger=args.toInteger)    
+    average_grpFile(grpFile_list=args.inputFile, prefix=args.prefix, toInteger=args.toInteger)
 
 
 

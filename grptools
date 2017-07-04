@@ -349,35 +349,44 @@ def compareTSS(args):
         assert len(tmp_grp_arrays) == len(grp_arrays), "The input grp files have different number of columns!"
 
         for i, arr in enumerate(tmp_grp_arrays):
-            if i % 2 == 0:  # coverage columns
+            if i % 2 == 0:  # coverage columns, nothing to do
                 continue
-            for pos, tmp_tss in enumerate(arr):
-                if tmp_tss <= 1:
+            for tmp_pos, tmp_tss in enumerate(arr): # working on tss arrays
+                if tmp_tss <= 1:       # only tmp_tss more than 1 will be considered
                     continue
-                up = pos-upstream if pos-upstream > 0 else 0
-                down = pos+downstream+1 if pos+downstream+1 < len(arr) else len(arr)
-                tss = max(grp_arrays[i][up:down])
-                tss_index = list(grp_arrays[i][up:down]).index(tss)+up
-                cov_region = grp_arrays[i-1][up:down]
-                tmp_cov_region = tmp_grp_arrays[i-1][up:down]
+                tmp_cov = tmp_grp_arrays[i-1][tmp_pos]
+                if int(tmp_cov) == 0:  # besides, the TSS without any coverage will not be considered
+                    continue
+                # define coverage region of tmp_tss at tmp_pos
+                tmp_up = tmp_pos-upstream if tmp_pos-upstream > 0 else 0
+                tmp_down = tmp_pos+downstream+1 if tmp_pos+downstream+1 < len(arr) else len(arr)
+                tss = max(grp_arrays[i][tmp_up:tmp_down])
+                tss_pos = list(grp_arrays[i][tmp_up:tmp_down]).index(tss)+tmp_up
+                tss_up = tss_pos-upstream if tss_pos-upstream > 0 else 0
+                tss_down = tss_pos+downstream+1 if tss_pos+downstream+1 < len(arr) else len(arr)
+                cov_region = grp_arrays[i-1][tss_up:tss_down]
+                tmp_cov_region = tmp_grp_arrays[i-1][tmp_up:tmp_down]
 
                 # average TSS, also coverage of the clustering region
                 if mode == "average":
-                    grp_arrays[i][tss_index] = sum(tss, tmp_tss)/2
-                    grp_arrays[i-1][up:down] = np.arrays([x+y for x, y in zip(cov_region, tmp_cov_region)])/2
+                    grp_arrays[i][tss_pos] = sum(tss, tmp_tss)/2
+                    grp_arrays[i-1][tss_up:tss_down] = np.arrays([x+y for x, y in zip(cov_region, tmp_cov_region)])/2
 
                 # take max of TSS, also take the coverage of the sample with higher TSS
                 elif mode == "max":
-                    if tss > tmp_tss:
+                    if tss >= tmp_tss:                   # tss is larger, no change
                         continue
-                    else:
-                        #grp_arrays[i][up:down] = 0
-                        grp_arrays[i][tss_index] = tmp_tss
-                        grp_arrays[i-1][up:down] = tmp_cov_region
+                    else:                                # tss is smaller, use tmp_tss
+                        # set tss count and coverage of old tss region to 0
+                        #grp_arrays[i][tmp_up:tmp_down] = 0
+                        #grp_arrays[i-1][tss_up:tss_down] = 0
+                        # transfer count and coverage of tmp_tss region to tss region
+                        grp_arrays[i][tmp_pos] = tmp_tss
+                        grp_arrays[i-1][tmp_up:tmp_down] = tmp_cov_region
                 # take sum of TSS, also take the sum of the samples for coverage
                 else:
-                    grp_arrays[i][tss_index] = sum(tss, tmp_tss)
-                    grp_arrays[i-1][up:down] = np.arrays([x+y for x, y in zip(cov_region, tmp_cov_region)])
+                    grp_arrays[i][tss_pos] = sum(tss, tmp_tss)
+                    grp_arrays[i-1][tss_up:tss_down] = np.arrays([x+y for x, y in zip(cov_region, tmp_cov_region)])
 
     _write_grp(outfile, headers, grp_arrays, toInt)
 
