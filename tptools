@@ -815,6 +815,8 @@ def grp2TssTable(args):
             if tss > 0:
                 idx = i
                 pos = idx + 1
+                if cov == 0:
+                    cov = tss
                 if tss > cov:
                     tss = cov
                 TssCovRatio = tss/cov
@@ -825,6 +827,8 @@ def grp2TssTable(args):
             if tss > 0:
                 idx = i
                 pos = idx + 1
+                if cov == 0:
+                    cov = tss
                 if tss > cov:
                     tss = cov
                 TssCovRatio = tss/cov
