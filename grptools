@@ -378,6 +378,7 @@ def compareTSS(args):
                         continue
                     else:                                # tss is smaller, use tmp_tss
                         # set tss count and coverage of old tss region to 0
+                        grp_arrays[i][tss_pos] = 0
                         #grp_arrays[i][tmp_up:tmp_down] = 0
                         #grp_arrays[i-1][tss_up:tss_down] = 0
                         # transfer count and coverage of tmp_tss region to tss region

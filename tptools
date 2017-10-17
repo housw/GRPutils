@@ -265,6 +265,8 @@ class Transcript(RNA):
 class repeat_Region(BaseGffRecord):
     """repeat_region"""
 
+class riboswitch(BaseGffRecord):
+    """riboswitch"""
 
 
 class GffRecordParser(object):
@@ -279,6 +281,9 @@ class GffRecordParser(object):
                     'tmrna':tmRNA,
                     'misc_rna':misc_RNA,
                     'ncrna':ncRNA,
+                    'srp_rna':ncRNA,
+                    'rnase_p_rna':ncRNA,
+                    'riboswitch':riboswitch,
                     'repeat_region':repeat_Region,
                     'transcript':Transcript,
                     'exon':Exon
@@ -322,9 +327,6 @@ class GffRecordParser(object):
 
     def __iter__(self):
         return self._line_parser()
-
-
-
 
 
 class TATA(object):
@@ -822,7 +824,7 @@ def grp2TssTable(args):
                 TssCovRatio = tss/cov
                 lces = _calculate_local_cov_enrichment_score(idx,"+", fwd_cov, 10)
                 ltes = _calculate_local_TSS_enrichment_score(idx, "+", fwd_tss, 100)
-                oh.write(str(idx) +"\t+"+"\t"+str(tss)+"\t"+str(cov)+"\t%.2f"%TssCovRatio+"\t%.2f"%lces+"\t%.2f"%ltes+"\n")
+                oh.write(str(pos) +"\t+"+"\t"+str(tss)+"\t"+str(cov)+"\t%.2f"%TssCovRatio+"\t%.2f"%lces+"\t%.2f"%ltes+"\n")
         for i, (cov, tss) in enumerate(zip(rev_cov, rev_tss)):
             if tss > 0:
                 idx = i
@@ -834,7 +836,7 @@ def grp2TssTable(args):
                 TssCovRatio = tss/cov
                 lces = _calculate_local_cov_enrichment_score(idx,"-", rev_cov, 10)
                 ltes = _calculate_local_TSS_enrichment_score(idx, "-", rev_tss, 100)
-                oh.write(str(idx) +"\t-"+"\t"+str(tss)+"\t"+str(cov)+"\t%.2f"%TssCovRatio+"\t%.2f"%lces+"\t%.2f"%ltes+"\n")
+                oh.write(str(pos) +"\t-"+"\t"+str(tss)+"\t"+str(cov)+"\t%.2f"%TssCovRatio+"\t%.2f"%lces+"\t%.2f"%ltes+"\n")
 
 
 def _get_gene_dict_from_gff(gff_file):
@@ -1493,7 +1495,7 @@ def filterCounts(args):
                     tss_oh.write(ID+"\t"+Expression+"\t"+Type+"\t"+\
                           Start+"\t"+End+"\t"+Description+"\t"+\
                           Strand+"\t"+Product+"\t"+Attributes+"\n")
-        if not tss_oh.closed:
+        if write_gff:
             tss_oh.close()
 
 
@@ -1645,7 +1647,7 @@ def main():
     parser_filterCounts.add_argument('countMappedTssTable', help='input TSS table with count columns '\
                                      'of different samples')
     parser_filterCounts.add_argument("sampleColumns", nargs="+", type=int, help="0-based column index of TSS counts for samples")
-    parser_filterCounts.add_argument('-n', '--minimum', type=float, default=100,
+    parser_filterCounts.add_argument('-m', '--minimum', type=float, default=100,
                                   help='minimum count cutoff, at least one sample need to meet, default=50')
     parser_filterCounts.add_argument('-a', '--average', type=float, default=50,
                                   help='average count cutoff across all samples, default=50')
