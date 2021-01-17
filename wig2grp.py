@@ -23,6 +23,7 @@ import sys
 import argparse
 import numpy as np
 from Bio import SeqIO
+from sys import stdout, stderr
 
 
 def get_genome_size(input_file):
@@ -49,14 +50,14 @@ def wig2grp(genomeSizeDict, wig):
             if line.startswith("variableStep"):
                 chrom = line.strip().split("chrom=")[-1].strip()
                 if not chrom in genomeSizeDict:
-                    print >> sys.stderr, "ERROR: chromosome %s in your wig file was not found in your genome reference! "%chrom
+                    stderr.write("ERROR: chromosome %s in your wig file was not found in your genome reference! "%chrom)
                     sys.exit(1)
             else:
                 line = line.strip().split("\t")
                 index = int(line[0])-1
                 value = float(line[1])
                 if index >= len(chromArrayDict[chrom]):
-                    print >> sys.stderr, "ATTENTION: Mapped position at %d was out of genome length %d, on chromosome %s"%(index, genomeSizeDict[chrom], chrom)
+                    stderr.write("ATTENTION: Mapped position at %d was out of genome length %d, on chromosome %s"%(index, genomeSizeDict[chrom], chrom))
                     continue
                 chromArrayDict[chrom][index] = value
 
@@ -131,13 +132,13 @@ def main():
     genomeSizeDict = get_genome_size(args.genomeFasta)
 
     if not (args.forward or args.reverse):
-        print >> sys.stderr, "\nERROR: At least one wig file need to be given!\n"
+        stderr.write("\nERROR: At least one wig file need to be given!\n")
         parser.print_help()
         sys.exit(1)
     else:
         write2grp(genomeSizeDict, fwd=args.forward, rev=args.reverse, prefix=args.prefix, toInteger=args.toInteger)
 
-    print "---- DONE ----"
+    print("---- DONE ----")
 
 
 if __name__ == "__main__":
