@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 
 import sys, os
@@ -84,7 +84,7 @@ def main():
     parser.add_argument("-p", "--prefix", required=False, help="output prefix for grp file")
     parser.add_argument("-t", "--toInteger", required=False, action="store_true", default=True, help="write out integer values")
     args = parser.parse_args()
-    print "[merge_grp] input grp files are: ", ";".join(args.inputFile)
+    print("[merge_grp] input grp files are: ", ";".join(args.inputFile))
 
     average_grpFile(grpFile_list=args.inputFile, prefix=args.prefix, toInteger=args.toInteger)
 

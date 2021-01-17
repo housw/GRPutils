@@ -29,14 +29,14 @@ from Bio import motifs
 from Bio.Alphabet import IUPAC
 import numpy as np
 from collections import Counter
-from itertools import izip
+from sys import stdout, stderr
 from grptools import _read_grp, _group_tss, _get_ncol
 
 
 def main_usage(parser):
     """ display usage for main parser
     """
-    print >>sys.stderr, parser.format_help()
+    stderr.write(parser.format_help())
 
 def subparser_usage(argv, parser):
     """ display usage for subparser
@@ -47,10 +47,10 @@ def subparser_usage(argv, parser):
         if isinstance(action, argparse._SubParsersAction):
             for choice, subparser in action.choices.items():
                 if cmd == choice:
-                    print >>sys.stderr, subparser.format_help()
+                    stderr.write(subparser.format_help())
                     found = 1
     if not found:
-        print >>sys.stderr, "\n\nERROR:%s is not a valid command!!!\n\n"%cmd
+        stderr.write("\n\nERROR:%s is not a valid command!!!\n\n"%cmd)
         main_usage(parser)
 
 def display_help(argv, parser):
@@ -169,7 +169,7 @@ class Gene(BaseGffRecord):
         if isinstance(child, BaseGffRecord):
             self.children.append(child)
         else:
-            print "Child should be GffRecord instance !"
+            print("Child should be GffRecord instance !")
 
     def get_children(self, id2records):
         return self.children
@@ -211,7 +211,7 @@ class CDS(BaseGffRecord):
         if isinstance(parent, Gene):
             self.parent = parent
         else:
-            print "Parent of CDS should be Gene instance !"
+            print("Parent of CDS should be Gene instance !")
 
 
 class RNA(BaseGffRecord):
@@ -232,13 +232,13 @@ class RNA(BaseGffRecord):
         if isinstance(parent, Gene):
             self.parent = parent
         else:
-            print "Parent of RNA should be Gene instance !"
+            print("Parent of RNA should be Gene instance !")
 
     def add_child(self, child):
         if isinstance(child, BaseGffRecord):
             self.children.append(child)
         else:
-            print "Child of RNA should be BaseGffRecord instance !"
+            print("Child of RNA should be BaseGffRecord instance !")
 
 
 class tRNA(RNA):
@@ -308,7 +308,7 @@ class GffRecordParser(object):
                 try:
                     handle.close()
                 except Exception as e:
-                    print e
+                    print(e)
                 break
 
             else:
@@ -319,7 +319,7 @@ class GffRecordParser(object):
                     feature = gff_line_list[2].lower()
                     constructor = GffRecordParser.constructors.get(feature, None)
                     if constructor is None:
-                        print "No constructor was found for feature: %s, use BaseGffRecord instead."%feature
+                        print("No constructor was found for feature: %s, use BaseGffRecord instead."%feature)
                         constructor = BaseGffRecord
 
                     gff_record = constructor(*gff_line_list)
@@ -475,7 +475,7 @@ def get_naive_TATA_instances(input_tss, cutoff=200):
             else:
                 continue
 
-    print "Totally %d naive TATA sequences with cutoff %.2f"%(len(tss_dict), cutoff)
+    print("Totally %d naive TATA sequences with cutoff %.2f"%(len(tss_dict), cutoff))
 
     return tss_dict.values()
 

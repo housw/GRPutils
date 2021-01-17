@@ -16,17 +16,18 @@
 
 
 import os
-import sys
+import sys 
 import argparse
 import numpy as np
 from Bio import SeqIO
 from collections import Counter
+from sys import stdout, stderr
 
 
 def main_usage(parser):
     """ display usage for main parser
     """
-    print >>sys.stderr, parser.format_help()
+    stderr.write(parser.format_help())
 
 def subparser_usage(argv, parser):
     """ display usage for subparser
@@ -37,10 +38,10 @@ def subparser_usage(argv, parser):
         if isinstance(action, argparse._SubParsersAction):
             for choice, subparser in action.choices.items():
                 if cmd == choice:
-                    print >>sys.stderr, subparser.format_help()
+                    stderr.write(subparser.format_help())
                     found = 1
     if not found:
-        print >>sys.stderr, "\n\nERROR:%s is not a valid command!!!\n\n"%cmd
+        stderr.write("\n\nERROR:%s is not a valid command!!!\n\n"%cmd)
         main_usage(parser)
 
 def display_help(argv, parser):
@@ -83,16 +84,16 @@ def _get_chromArrayDict(genomeSizeDict, wig):
             if line.startswith("variableStep"):
                 chrom = line.strip().split("chrom=")[-1].strip()
                 if not chrom in genomeSizeDict:
-                    print >> sys.stderr, "ERROR: chromosome %s in your wig file was not found " \
-                                         "in your genome reference! "%chrom
+                    stderr.write("ERROR: chromosome %s in your wig file was not found " \
+                                         "in your genome reference! "%chrom)
                     sys.exit(1)
             else:
                 line = line.strip().split("\t")
                 index = int(line[0])-1
                 value = float(line[1])
                 if index >= len(chromArrayDict[chrom]):
-                    print >> sys.stderr, "ATTENTION: Mapped position at %d was out of genome length %d, " \
-                                         "on chromosome %s"%(index, genomeSizeDict[chrom], chrom)
+                    stderr.write("ATTENTION: Mapped position at %d was out of genome length %d, " \
+                                         "on chromosome %s"%(index, genomeSizeDict[chrom], chrom))
                     continue
                 chromArrayDict[chrom][index] = value
 
@@ -104,7 +105,7 @@ def wig2grp(args):
     """
     # test args
     if not (args.fwd_wig or args.rev_wig):
-        print >> sys.stderr, "\nERROR: At least one wiggle file need to be given!\n"
+        stderr.write("\nERROR: At least one wiggle file need to be given!\n")
         sys.exit(1)
 
     # wiggle files, prefix and other arguments
@@ -506,20 +507,20 @@ def summarize(args):
     length = len(arrays[0])
     colnames = headers[0].lstrip("# BASE").split()
 
-    print "Input grp file contains %d columns (excluding pos_array), " \
-          "each column has %d values"%(ncol, length)
-    print "The colnames includes:"
-    print "\t", "\t".join(colnames)
+    print("Input grp file contains %d columns (excluding pos_array), " \
+          "each column has %d values"%(ncol, length))
+    print("The colnames includes:")
+    print("\t", "\t".join(colnames))
 
     # summarize each arr
     for i, name in enumerate(colnames):
-        print "For column %s:"%name
+        print("For column %s:"%name)
         arr = arrays[i]
-        print "\tSum:\t%.2f"%sum(arr)
-        print "\tMin:\t%.2f"%min(arr)
-        print "\tMax:\t%.2f"%max(arr)
-        print "\tMedian:\t%.2f"%np.median(arr)
-        print "\tMean:\t%.2f"%np.mean(arr)
+        print("\tSum:\t%.2f"%sum(arr))
+        print("\tMin:\t%.2f"%min(arr))
+        print("\tMax:\t%.2f"%max(arr))
+        print("\tMedian:\t%.2f"%np.median(arr))
+        print("\tMean:\t%.2f"%np.mean(arr))
 
 
 def slice(args):
@@ -690,7 +691,7 @@ def _group_tss(tss_arr, before=5, after=5, template_tss_arr=None, set_to_zero=Fa
 
     # count how many tss we have after grouping
     newNum = Counter(tss_arr > 0)[True]
-    print "Grouped %d raw tss into %d raw tss in region %d upstream and %d downstream" % (oldNum, newNum, before, after)
+    print("Grouped %d raw tss into %d raw tss in region %d upstream and %d downstream" % (oldNum, newNum, before, after))
 
     return tss_arr
 
